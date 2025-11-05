@@ -163,33 +163,35 @@ class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
           _ItalicIntent: CallbackAction<_ItalicIntent>(onInvoke: (i) => _wrapSelection('*', '*')),
           _LinkIntent: CallbackAction<_LinkIntent>(onInvoke: (i) => _insertLink()),
         },
-        child: TextField(
-          controller: _controller,
-          scrollController: _scrollController,
-          maxLines: null,
-          // Make the editor take all available height; scroll when content exceeds
-          expands: true,
-          // Ensure content anchors to the top when expanded
-          textAlignVertical: TextAlignVertical.top,
-          textAlign: TextAlign.start,
-          keyboardType: TextInputType.multiline,
-          textInputAction: TextInputAction.newline,
-          autocorrect: false,
-          enableSuggestions: false,
-          // Ensure the caret scrolls above the keyboard and bottom bar
-          scrollPadding: EdgeInsets.only(bottom: caretSafeBottom),
-          style: GoogleFonts.jetBrainsMono().copyWith(
-            fontSize: 16,
-            height: 1.6,
-            fontWeight: FontWeight.w400,
-            fontFamilyFallback: const ['GeistMono', 'monospace'],
-          ),
-          decoration: InputDecoration(
-            // Keep visual margins consistent without forcing extra bottom padding
-            contentPadding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-            border: InputBorder.none,
-            // Remove any theme-level fill or borders so the editor blends into the canvas
-            filled: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+          child: TextField(
+            controller: _controller,
+            scrollController: _scrollController,
+            maxLines: null,
+            // Make the editor take all available height; scroll when content exceeds
+            expands: true,
+            // Ensure content anchors to the top when expanded
+            textAlignVertical: TextAlignVertical.top,
+            textAlign: TextAlign.start,
+            keyboardType: TextInputType.multiline,
+            textInputAction: TextInputAction.newline,
+            autocorrect: false,
+            enableSuggestions: false,
+            // Ensure the caret scrolls above the keyboard and bottom bar
+            scrollPadding: EdgeInsets.only(bottom: caretSafeBottom),
+            style: GoogleFonts.jetBrainsMono().copyWith(
+              fontSize: 16,
+              height: 1.6,
+              fontWeight: FontWeight.w400,
+              fontFamilyFallback: const ['GeistMono', 'monospace'],
+            ),
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              // Collapsed decoration prevents any extra vertical layout that can center content
+              isCollapsed: true,
+              filled: false,
+            ),
           ),
         ),
       ),
@@ -241,21 +243,24 @@ class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
                   children: [
                     // Editor area (no tint / borders)
                     Positioned.fill(
-                      child: TextField(
-                        controller: _controller,
-                        maxLines: null,
-                        expands: true,
-                        textAlignVertical: TextAlignVertical.top,
-                        textAlign: TextAlign.start,
-                        keyboardType: TextInputType.multiline,
-                        textInputAction: TextInputAction.newline,
-                        // Keep caret visible above keyboard and bottom bar
-                        scrollPadding: EdgeInsets.only(bottom: caretSafeBottom),
-                        style: const TextStyle(fontSize: 16, height: 1.6),
-                        decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-                          border: InputBorder.none,
-                          filled: false,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                        child: TextField(
+                          controller: _controller,
+                          maxLines: null,
+                          expands: true,
+                          textAlignVertical: TextAlignVertical.top,
+                          textAlign: TextAlign.start,
+                          keyboardType: TextInputType.multiline,
+                          textInputAction: TextInputAction.newline,
+                          // Keep caret visible above keyboard and bottom bar
+                          scrollPadding: EdgeInsets.only(bottom: caretSafeBottom),
+                          style: const TextStyle(fontSize: 16, height: 1.6),
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            isCollapsed: true,
+                            filled: false,
+                          ),
                         ),
                       ),
                     ),
