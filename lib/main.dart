@@ -4,14 +4,21 @@ import 'widgets/component_examples/component_example_registry.dart';
 import 'routes/go_router_config.dart';
 import 'theme.dart';
 import 'theme_controller.dart';
+import 'features/markdown/services/syntax_highlight_initializer.dart';
 
 /// Entry point for the shadcn/ui Flutter showcase application.
 /// This application demonstrates various shadcn/ui components with interactive examples
 /// and responsive design.
-void main() {
+void main() async {
+  // Ensure Flutter framework is initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
   // Initialize all component examples before starting the app
   // This ensures all components are registered and available throughout the app
   ComponentExampleRegistry.registerAll();
+
+  // Initialize syntax highlighting service for enhanced code blocks
+  await SyntaxHighlightInitializer.initialize();
 
   runApp(const MyApp());
 }

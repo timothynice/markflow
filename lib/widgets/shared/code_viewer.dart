@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:syntax_highlight/syntax_highlight.dart';
+import '../../features/markdown/services/syntax_highlight_service.dart';
+import '../../theme_controller.dart';
 
 /// Reusable code viewer widget with syntax highlighting and copy functionality
 class CodeViewer extends StatefulWidget {
@@ -21,26 +22,54 @@ class CodeViewer extends StatefulWidget {
 }
 
 class _CodeViewerState extends State<CodeViewer> {
-  Highlighter? highlighter;
+  TextSpan? _highlightedCode;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _initializeHighlighter();
+    _highlightCode();
   }
 
-  Future<void> _initializeHighlighter() async {
+  @override
+  void didUpdateWidget(CodeViewer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.code != widget.code || oldWidget.language != widget.language) {
+      _highlightCode();
+    }
+  }
+
+  Future<void> _highlightCode() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
-      await Highlighter.initialize([widget.language]);
-      final theme = await HighlighterTheme.loadLightTheme();
-      highlighter = Highlighter(
-        language: widget.language,
-        theme: theme,
+      final isDarkMode = ThemeController.instance.isDarkMode;
+      final highlightService = SyntaxHighlightService.instance;
+
+      final highlightedSpan = await highlightService.highlight(
+        widget.code,
+        widget.language,
+        isDarkMode: isDarkMode,
       );
-      setState(() {});
+
+      setState(() {
+        _highlightedCode = highlightedSpan;
+        _isLoading = false;
+      });
     } catch (e) {
-      // Handle initialization error
-      debugPrint('Failed to initialize highlighter: $e');
+      debugPrint('Failed to highlight code: $e');
+      setState(() {
+        _isLoading = false;
+        _highlightedCode = TextSpan(
+          text: widget.code,
+          style: const TextStyle(
+            fontSize: 14,
+            fontFamily: 'GeistMono',
+          ),
+        );
+      });
     }
   }
 
@@ -77,12 +106,16 @@ class _CodeViewerState extends State<CodeViewer> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isDarkMode ? Colors.grey[800]! : Colors.grey.shade200,
+        ),
         borderRadius: BorderRadius.circular(8),
-        color: Colors.grey.shade50,
+        color: isDarkMode ? Colors.grey[900] : Colors.grey.shade50,
       ),
       child: Stack(
         children: [
@@ -93,19 +126,23 @@ class _CodeViewerState extends State<CodeViewer> {
               behavior: ScrollConfiguration.of(context).copyWith(
                 scrollbars: false,
               ),
-              child: highlighter != null
-                  ? SingleChildScrollView(
-                      child: SelectableText.rich(
-                        highlighter!.highlight(widget.code),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontFamily: 'GeistMono',
-                        ),
+              child: _isLoading
+                  ? const Center(
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
                       ),
                     )
                   : SingleChildScrollView(
-                      child: SelectableText(
-                        widget.code,
+                      child: SelectableText.rich(
+                        _highlightedCode ?? TextSpan(
+                          text: widget.code,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'GeistMono',
+                          ),
+                        ),
                         style: const TextStyle(
                           fontSize: 14,
                           fontFamily: 'GeistMono',
