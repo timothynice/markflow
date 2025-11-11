@@ -7,7 +7,7 @@ class FootnoteRenderer extends MarkdownElementBuilder {
   final Function(String footnoteId, BuildContext context)? onFootnoteTap;
   final bool enableInteraction;
 
-  const FootnoteRenderer({
+  FootnoteRenderer({
     this.onFootnoteTap,
     this.enableInteraction = true,
   });
@@ -49,7 +49,7 @@ class FootnoteRenderer extends MarkdownElementBuilder {
               : null,
           child: Container(
             decoration: BoxDecoration(
-              color: theme.colorScheme.primary.withOpacity(0.1),
+              color: theme.colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(3),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
@@ -81,10 +81,10 @@ class FootnoteRenderer extends MarkdownElementBuilder {
           margin: const EdgeInsets.symmetric(vertical: 8),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+            color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.5),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: theme.colorScheme.outline.withOpacity(0.2),
+              color: theme.colorScheme.outline.withValues(alpha: 0.2),
             ),
           ),
           child: Row(
@@ -205,7 +205,7 @@ class FootnotesSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 24),
-        Divider(color: theme.colorScheme.outline.withOpacity(0.3)),
+        Divider(color: theme.colorScheme.outline.withValues(alpha: 0.3)),
         const SizedBox(height: 16),
         Text(
           'Footnotes',
@@ -231,7 +231,7 @@ class FootnotesSection extends StatelessWidget {
             width: 20,
             height: 20,
             decoration: BoxDecoration(
-              color: theme.colorScheme.primary.withOpacity(0.1),
+              color: theme.colorScheme.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
               border: Border.all(
                 color: theme.colorScheme.primary,

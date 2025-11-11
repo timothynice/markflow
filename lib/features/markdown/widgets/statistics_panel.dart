@@ -119,13 +119,12 @@ class StatisticsPanel extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          ShadButton.ghost(
+          ShadIconButton.ghost(
             onPressed: onToggle,
             icon: Icon(
               isExpanded ? Icons.chevron_left : Icons.chevron_right,
               size: 18,
             ),
-            padding: const EdgeInsets.all(4),
           ),
         ],
       ),

@@ -72,7 +72,7 @@ class _KeyBindingHelpOverlayState extends State<KeyBindingHelpOverlay> with Sing
       focusNode: FocusNode(),
       onKeyEvent: _handleKeyEvent,
       child: Material(
-        color: Colors.black.withOpacity(0.5),
+        color: Colors.black.withValues(alpha: 0.5),
         child: GestureDetector(
           onTap: _close,
           child: Center(
@@ -110,7 +110,7 @@ class _KeyBindingHelpOverlayState extends State<KeyBindingHelpOverlay> with Sing
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -133,11 +133,11 @@ class _KeyBindingHelpOverlayState extends State<KeyBindingHelpOverlay> with Sing
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+        color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.5),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
         border: Border(
           bottom: BorderSide(
-            color: theme.dividerColor.withOpacity(0.2),
+            color: theme.dividerColor.withValues(alpha: 0.2),
           ),
         ),
       ),
@@ -217,24 +217,27 @@ class _KeyBindingHelpOverlayState extends State<KeyBindingHelpOverlay> with Sing
             ),
           ),
           const SizedBox(width: 12),
-          DropdownButton<String>(
-            value: _selectedCategory,
-            onChanged: (value) {
-              setState(() {
-                _selectedCategory = value ?? 'All';
-              });
-            },
-            items: categories.map((category) {
-              return DropdownMenuItem(
-                value: category,
-                child: Text(category),
-              );
-            }).toList(),
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+          SizedBox(
+            width: 220,
+            child: DropdownButtonFormField<String>(
+              value: _selectedCategory,
+              onChanged: (value) {
+                setState(() {
+                  _selectedCategory = value ?? 'All';
+                });
+              },
+              items: categories
+                  .map((category) => DropdownMenuItem(
+                        value: category,
+                        child: Text(category),
+                      ))
+                  .toList(),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             ),
           ),
         ],
@@ -254,20 +257,20 @@ class _KeyBindingHelpOverlayState extends State<KeyBindingHelpOverlay> with Sing
             Icon(
               Icons.search_off,
               size: 64,
-              color: theme.colorScheme.onSurface.withOpacity(0.3),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
             Text(
               'No commands found',
               style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 8),
             Text(
               'Try adjusting your search or filter',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.5),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ],
@@ -318,10 +321,10 @@ class _KeyBindingHelpOverlayState extends State<KeyBindingHelpOverlay> with Sing
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+        color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: theme.dividerColor.withOpacity(0.2),
+          color: theme.dividerColor.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
@@ -341,7 +344,7 @@ class _KeyBindingHelpOverlayState extends State<KeyBindingHelpOverlay> with Sing
                 Text(
                   command.description,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.7),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
               ],
@@ -371,7 +374,7 @@ class _KeyBindingHelpOverlayState extends State<KeyBindingHelpOverlay> with Sing
         color: theme.colorScheme.secondaryContainer,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.3),
+          color: theme.colorScheme.outline.withValues(alpha: 0.3),
         ),
       ),
       child: Text(
@@ -392,11 +395,11 @@ class _KeyBindingHelpOverlayState extends State<KeyBindingHelpOverlay> with Sing
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+        color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.3),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
         border: Border(
           top: BorderSide(
-            color: theme.dividerColor.withOpacity(0.2),
+            color: theme.dividerColor.withValues(alpha: 0.2),
           ),
         ),
       ),
@@ -405,7 +408,7 @@ class _KeyBindingHelpOverlayState extends State<KeyBindingHelpOverlay> with Sing
           Icon(
             Icons.info_outline,
             size: 16,
-            color: theme.colorScheme.onSurface.withOpacity(0.6),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -414,7 +417,7 @@ class _KeyBindingHelpOverlayState extends State<KeyBindingHelpOverlay> with Sing
                   ? 'Vim mode: Press Esc to enter Normal mode, i/a/o for Insert mode'
                   : 'Emacs mode: C- = Ctrl, M- = Alt. Use C-g to cancel commands',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ),
@@ -427,7 +430,7 @@ class _KeyBindingHelpOverlayState extends State<KeyBindingHelpOverlay> with Sing
               Text(
                 'Close',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -477,9 +480,9 @@ class KeyBindingHelpButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: keyBindingService,
-      builder: (context, _, __) {
+    return AnimatedBuilder(
+      animation: keyBindingService,
+      builder: (context, _) {
         if (!keyBindingService.isEnabled) {
           return const SizedBox.shrink();
         }
@@ -553,14 +556,14 @@ class QuickReferenceCard extends StatelessWidget {
                       Icon(
                         Icons.open_in_full,
                         size: 12,
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                       const SizedBox(width: 2),
                       Text(
                         'F1',
                         style: TextStyle(
                           fontSize: 10,
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                           fontFamily: 'monospace',
                         ),
                       ),

@@ -12,7 +12,7 @@ import 'markdown_code_builder.dart';
 /// Extended markdown viewer with support for footnotes, task lists, definition lists, and text extensions
 class ExtendedMarkdownViewer extends StatefulWidget {
   final String data;
-  final EdgeInsetsGeometry? padding;
+  final EdgeInsets? padding;
   final bool selectable;
   final bool softLineBreak;
   final MarkdownStyleSheet? styleSheet;
@@ -140,7 +140,7 @@ class _ExtendedMarkdownViewerState extends State<ExtendedMarkdownViewer> {
         Expanded(
           child: Markdown(
             data: widget.data,
-            padding: widget.padding,
+            padding: widget.padding ?? EdgeInsets.zero,
             controller: widget.controller,
             physics: widget.physics,
             selectable: widget.selectable,
@@ -185,16 +185,16 @@ class _ExtendedMarkdownViewerState extends State<ExtendedMarkdownViewer> {
 
     // Add extension syntaxes based on settings
     if (widget.enableTaskLists) {
-      blockSyntaxes.add(TaskListSyntax());
+      blockSyntaxes.add(TaskListBlockSyntax());
     }
 
     if (widget.enableDefinitionLists) {
-      blockSyntaxes.add(DefinitionListSyntax());
+      blockSyntaxes.add(DefinitionListBlockSyntax());
     }
 
     if (widget.enableFootnotes) {
-      blockSyntaxes.add(FootnoteDefinitionSyntax());
-      inlineSyntaxes.add(FootnoteSyntax());
+      blockSyntaxes.add(FootnoteDefinitionBlockSyntax());
+      inlineSyntaxes.add(FootnoteInlineSyntax());
     }
 
     if (widget.enableStrikethrough) {
@@ -203,9 +203,9 @@ class _ExtendedMarkdownViewerState extends State<ExtendedMarkdownViewer> {
 
     if (widget.enableTextExtensions) {
       inlineSyntaxes.addAll([
-        HighlightSyntax(),
-        SubscriptSyntax(),
-        SuperscriptSyntax(),
+        HighlightInlineSyntax(),
+        SubscriptInlineSyntax(),
+        SuperscriptInlineSyntax(),
       ]);
     }
 
@@ -323,12 +323,12 @@ class MarkdownExtensionSettings {
 
   factory MarkdownExtensionSettings.fromJson(Map<String, dynamic> json) {
     return MarkdownExtensionSettings(
-      enableFootnotes: json['enableFootnotes'] ?? true,
-      enableTaskLists: json['enableTaskLists'] ?? true,
-      enableDefinitionLists: json['enableDefinitionLists'] ?? true,
-      enableTextExtensions: json['enableTextExtensions'] ?? true,
-      enableStrikethrough: json['enableStrikethrough'] ?? true,
-      enableInteractiveElements: json['enableInteractiveElements'] ?? true,
+      enableFootnotes: (json['enableFootnotes'] as bool?) ?? true,
+      enableTaskLists: (json['enableTaskLists'] as bool?) ?? true,
+      enableDefinitionLists: (json['enableDefinitionLists'] as bool?) ?? true,
+      enableTextExtensions: (json['enableTextExtensions'] as bool?) ?? true,
+      enableStrikethrough: (json['enableStrikethrough'] as bool?) ?? true,
+      enableInteractiveElements: (json['enableInteractiveElements'] as bool?) ?? true,
     );
   }
 }

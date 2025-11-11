@@ -80,11 +80,11 @@ class AutoCompleteService extends ChangeNotifier {
     final prefsJson = _prefs!.getString(_prefsKey);
     if (prefsJson != null) {
       try {
-        final Map<String, dynamic> prefs = jsonDecode(prefsJson);
-        _isEnabled = prefs['enabled'] ?? true;
-        _autoTriggerEnabled = prefs['autoTrigger'] ?? true;
-        _suggestionDelay = prefs['delay'] ?? 300;
-        _maxSuggestions = prefs['maxSuggestions'] ?? 10;
+        final Map<String, dynamic> prefs = jsonDecode(prefsJson) as Map<String, dynamic>;
+        _isEnabled = (prefs['enabled'] as bool?) ?? true;
+        _autoTriggerEnabled = (prefs['autoTrigger'] as bool?) ?? true;
+        _suggestionDelay = (prefs['delay'] as int?) ?? 300;
+        _maxSuggestions = (prefs['maxSuggestions'] as int?) ?? 10;
 
         final triggers = prefs['triggerCharacters'] as List<dynamic>?;
         if (triggers != null) {
@@ -103,8 +103,12 @@ class AutoCompleteService extends ChangeNotifier {
     final statsJson = _prefs!.getString(_usageStatsKey);
     if (statsJson != null) {
       try {
-        final Map<String, dynamic> stats = jsonDecode(statsJson);
-        _usageStats = stats.cast<String, int>();
+        final Map<String, dynamic> stats = jsonDecode(statsJson) as Map<String, dynamic>;
+        // Safely coerce numeric types
+        _usageStats = stats.map((key, value) => MapEntry(
+              key,
+              (value is num) ? value.toInt() : int.tryParse(value.toString()) ?? 0,
+            ));
       } catch (e) {
         debugPrint('Failed to load usage statistics: $e');
       }
@@ -118,9 +122,11 @@ class AutoCompleteService extends ChangeNotifier {
     final shortcutsJson = _prefs!.getString(_customShortcutsKey);
     if (shortcutsJson != null) {
       try {
-        final List<dynamic> shortcuts = jsonDecode(shortcutsJson);
+        final List<dynamic> shortcuts = jsonDecode(shortcutsJson) as List<dynamic>;
         _customShortcuts = shortcuts
-            .map((json) => CompletionSuggestion.fromJson(json))
+            .map((json) => CompletionSuggestion.fromJson(
+                  Map<String, dynamic>.from(json as Map),
+                ))
             .toList();
       } catch (e) {
         debugPrint('Failed to load custom shortcuts: $e');

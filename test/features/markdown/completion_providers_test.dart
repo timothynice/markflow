@@ -271,7 +271,7 @@ void main() {
 
       expect(suggestions.any((s) => s.displayText.contains('API')), isTrue);
       expect(suggestions.any((s) => s.displayText.contains('Status')), isTrue);
-      expect(suggestions.any((s) => s.displayName.contains('Comparison')), isTrue);
+      expect(suggestions.any((s) => s.displayText.contains('Comparison')), isTrue);
       expect(suggestions.any((s) => s.displayText.contains('Schedule')), isTrue);
     });
 

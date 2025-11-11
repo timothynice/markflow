@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../services/table_service.dart';
+import '../services/table_service.dart' as ts;
 
 /// Callback for when table data changes
-typedef TableChangeCallback = void Function(TableData table);
+typedef TableChangeCallback = void Function(ts.TableData table);
 
 /// Callback for table operation execution
-typedef TableOperationCallback = void Function(TableOperation operation);
+typedef TableOperationCallback = void Function(ts.TableOperation operation);
 
 /// Interactive table editor with resize handles and context menus
 class TableEditor extends StatefulWidget {
-  final TableData table;
+  final ts.TableData table;
   final TableChangeCallback? onTableChanged;
   final TableOperationCallback? onOperation;
   final bool isReadOnly;
@@ -36,8 +36,8 @@ class TableEditor extends StatefulWidget {
 }
 
 class _TableEditorState extends State<TableEditor> {
-  late TableData _table;
-  late TableHistoryManager _historyManager;
+  late ts.TableData _table;
+  late ts.TableHistoryManager _historyManager;
 
   // Editing state
   int? _editingRow;
@@ -62,7 +62,7 @@ class _TableEditorState extends State<TableEditor> {
   void initState() {
     super.initState();
     _table = widget.table.copy();
-    _historyManager = TableHistoryManager();
+    _historyManager = ts.TableHistoryManager();
     _editFocus.addListener(_onEditFocusChanged);
   }
 
@@ -90,7 +90,7 @@ class _TableEditorState extends State<TableEditor> {
     }
   }
 
-  void _executeOperation(TableOperation operation) {
+  void _executeOperation(ts.TableOperation operation) {
     if (widget.onOperation != null) {
       widget.onOperation!(operation);
     } else {
@@ -138,7 +138,7 @@ class _TableEditorState extends State<TableEditor> {
     final oldContent = cell?.content ?? '';
 
     if (newContent != oldContent) {
-      final operation = SetCellContentOperation(
+      final operation = ts.SetCellContentOperation(
         _editingRow!,
         _editingColumn!,
         newContent,
@@ -235,35 +235,35 @@ class _TableEditorState extends State<TableEditor> {
     switch (action) {
       case 'insert_row_above':
         if (row != null) {
-          _executeOperation(InsertRowOperation(row));
+          _executeOperation(ts.InsertRowOperation(row));
         }
         break;
       case 'insert_row_below':
         if (row != null) {
-          _executeOperation(InsertRowOperation(row + 1));
+          _executeOperation(ts.InsertRowOperation(row + 1));
         }
         break;
       case 'delete_row':
         if (row != null) {
-          final deletedRow = List<TableCell>.from(_table.rows[row]);
-          _executeOperation(DeleteRowOperation(row, deletedRow));
+          final deletedRow = List<ts.TableCell>.from(_table.rows[row]);
+          _executeOperation(ts.DeleteRowOperation(row, deletedRow));
         }
         break;
       case 'insert_column_left':
         if (column != null) {
-          _executeOperation(InsertColumnOperation(column));
+          _executeOperation(ts.InsertColumnOperation(column));
         }
         break;
       case 'insert_column_right':
         if (column != null) {
-          _executeOperation(InsertColumnOperation(column + 1));
+          _executeOperation(ts.InsertColumnOperation(column + 1));
         }
         break;
       case 'delete_column':
         if (column != null) {
           final deletedColumn = _table.columns[column];
           final deletedCells = _table.rows.map((row) => row[column]).toList();
-          _executeOperation(DeleteColumnOperation(column, deletedColumn, deletedCells));
+          _executeOperation(ts.DeleteColumnOperation(column, deletedColumn, deletedCells));
         }
         break;
       case 'clear_table':
@@ -271,7 +271,7 @@ class _TableEditorState extends State<TableEditor> {
           for (int j = 0; j < _table.columnCount; j++) {
             final cell = _table.getCellAt(i, j);
             if (cell != null && cell.content.isNotEmpty) {
-              _executeOperation(SetCellContentOperation(i, j, '', cell.content));
+              _executeOperation(ts.SetCellContentOperation(i, j, '', cell.content));
             }
           }
         }
@@ -283,7 +283,9 @@ class _TableEditorState extends State<TableEditor> {
     if (event is! KeyDownEvent) return;
 
     if (event.logicalKey == LogicalKeyboardKey.tab) {
-      _navigateWithTab(event.modifiersPressed.contains(LogicalKeyboardKey.shift));
+      final pressed = HardwareKeyboard.instance.logicalKeysPressed;
+      final isShift = pressed.contains(LogicalKeyboardKey.shiftLeft) || pressed.contains(LogicalKeyboardKey.shiftRight);
+      _navigateWithTab(isShift);
       return;
     }
 
@@ -441,7 +443,7 @@ class _TableEditorState extends State<TableEditor> {
     );
   }
 
-  Widget _buildHeaderCell(ThemeData theme, int columnIndex, TableColumn column) {
+  Widget _buildHeaderCell(ThemeData theme, int columnIndex, ts.TableColumn column) {
     final isSelected = _selectedColumn == columnIndex;
 
     return Row(
@@ -460,7 +462,7 @@ class _TableEditorState extends State<TableEditor> {
             height: 40,
             decoration: BoxDecoration(
               color: isSelected
-                ? theme.colorScheme.primaryContainer.withOpacity(0.5)
+                ? theme.colorScheme.primaryContainer.withValues(alpha: 0.5)
                 : theme.colorScheme.surfaceContainerHighest,
               border: Border.all(
                 color: isSelected
@@ -486,7 +488,7 @@ class _TableEditorState extends State<TableEditor> {
     );
   }
 
-  Widget _buildDataRow(ThemeData theme, int rowIndex, List<TableCell> rowCells) {
+  Widget _buildDataRow(ThemeData theme, int rowIndex, List<ts.TableCell> rowCells) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -504,7 +506,7 @@ class _TableEditorState extends State<TableEditor> {
             height: 40,
             decoration: BoxDecoration(
               color: _selectedRow == rowIndex
-                ? theme.colorScheme.primaryContainer.withOpacity(0.5)
+                ? theme.colorScheme.primaryContainer.withValues(alpha: 0.5)
                 : theme.colorScheme.surfaceContainerHighest,
               border: Border.all(
                 color: _selectedRow == rowIndex
@@ -531,7 +533,7 @@ class _TableEditorState extends State<TableEditor> {
     );
   }
 
-  Widget _buildDataCell(ThemeData theme, int rowIndex, int columnIndex, TableCell cell) {
+  Widget _buildDataCell(ThemeData theme, int rowIndex, int columnIndex, ts.TableCell cell) {
     final isSelected = _selectedRow == rowIndex && _selectedColumn == columnIndex;
     final isEditing = _editingRow == rowIndex && _editingColumn == columnIndex;
     final column = _table.columns[columnIndex];
@@ -570,7 +572,7 @@ class _TableEditorState extends State<TableEditor> {
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             color: isSelected
-              ? theme.colorScheme.primaryContainer.withOpacity(0.3)
+              ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
               : theme.colorScheme.surface,
             border: Border.all(
               color: isSelected
@@ -614,7 +616,7 @@ class _TableEditorState extends State<TableEditor> {
           height: 40,
           decoration: BoxDecoration(
             color: _resizingColumn == columnIndex
-              ? theme.colorScheme.primary.withOpacity(0.3)
+              ? theme.colorScheme.primary.withValues(alpha: 0.3)
               : Colors.transparent,
           ),
           child: Center(
@@ -629,25 +631,25 @@ class _TableEditorState extends State<TableEditor> {
     );
   }
 
-  TextAlign _getTextAlign(TableAlignment alignment) {
+  TextAlign _getTextAlign(ts.TableAlignment alignment) {
     switch (alignment) {
-      case TableAlignment.center:
+      case ts.TableAlignment.center:
         return TextAlign.center;
-      case TableAlignment.right:
+      case ts.TableAlignment.right:
         return TextAlign.right;
-      case TableAlignment.left:
+      case ts.TableAlignment.left:
       default:
         return TextAlign.left;
     }
   }
 
-  Alignment _getAlignment(TableAlignment alignment) {
+  Alignment _getAlignment(ts.TableAlignment alignment) {
     switch (alignment) {
-      case TableAlignment.center:
+      case ts.TableAlignment.center:
         return Alignment.center;
-      case TableAlignment.right:
+      case ts.TableAlignment.right:
         return Alignment.centerRight;
-      case TableAlignment.left:
+      case ts.TableAlignment.left:
       default:
         return Alignment.centerLeft;
     }
@@ -656,7 +658,7 @@ class _TableEditorState extends State<TableEditor> {
 
 /// Simplified table editor for mobile devices
 class MobileTableEditor extends StatefulWidget {
-  final TableData table;
+  final ts.TableData table;
   final TableChangeCallback? onTableChanged;
   final bool isReadOnly;
 
@@ -672,7 +674,7 @@ class MobileTableEditor extends StatefulWidget {
 }
 
 class _MobileTableEditorState extends State<MobileTableEditor> {
-  late TableData _table;
+  late ts.TableData _table;
   final PageController _pageController = PageController();
   int _currentPage = 0;
 

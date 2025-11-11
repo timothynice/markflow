@@ -598,10 +598,6 @@ void main() {
       });
     });
 
-    // Cleanup after tests
-    tearDown(() async {
-      // Reset any test state if needed
-      await tester?.binding.setSurfaceSize(null);
-    });
+    // Cleanup after tests (no-op)
   });
 }

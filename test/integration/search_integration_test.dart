@@ -64,7 +64,7 @@ Testing the search functionality thoroughly.
       await tester.pumpAndSettle();
 
       // Test search options
-      final caseButton = find.byIcon(Icons.match_case);
+      final caseButton = find.byIcon(Icons.search);
       await tester.tap(caseButton);
       await tester.pumpAndSettle();
 

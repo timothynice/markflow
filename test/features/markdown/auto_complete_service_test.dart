@@ -184,7 +184,7 @@ void main() {
         await service.updateSettings(maxSuggestions: 1);
 
         // Create multiple mock suggestions
-        when(mockProvider.getSuggestions(any)).thenAnswer((_) async => [
+        when(mockProvider.getSuggestions(any as CompletionContext)).thenAnswer((invocation) async => [
           const CompletionSuggestion(
             insertText: 'suggestion1',
             displayText: 'Suggestion 1',
@@ -217,7 +217,7 @@ void main() {
     group('Suggestion Navigation', () {
       setUp(() async {
         // Set up some test suggestions
-        when(mockProvider.getSuggestions(any)).thenAnswer((_) async => [
+        when(mockProvider.getSuggestions(any as CompletionContext)).thenAnswer((invocation) async => [
           const CompletionSuggestion(
             insertText: 'first',
             displayText: 'First',
@@ -295,7 +295,7 @@ void main() {
       });
 
       test('applies selected suggestion', () async {
-        when(mockProvider.getSuggestions(any)).thenAnswer((_) async => [
+        when(mockProvider.getSuggestions(any as CompletionContext)).thenAnswer((invocation) async => [
           const CompletionSuggestion(
             insertText: '# Heading',
             displayText: '# Heading',

@@ -13,9 +13,9 @@ class ModeIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: keyBindingService,
-      builder: (context, _, __) {
+    return AnimatedBuilder(
+      animation: keyBindingService,
+      builder: (context, _) {
         if (!keyBindingService.settings.showModeIndicator || !keyBindingService.isEnabled) {
           return const SizedBox.shrink();
         }
@@ -73,8 +73,8 @@ class ModeIndicator extends StatelessWidget {
         vertical: isCompact ? 2 : 4,
       ),
       decoration: BoxDecoration(
-        color: modeColor.withOpacity(0.1),
-        border: Border.all(color: modeColor.withOpacity(0.3)),
+        color: modeColor.withValues(alpha: 0.1),
+        border: Border.all(color: modeColor.withValues(alpha: 0.3)),
         borderRadius: BorderRadius.circular(isCompact ? 4 : 6),
       ),
       child: Row(
@@ -116,8 +116,8 @@ class ModeIndicator extends StatelessWidget {
           vertical: isCompact ? 2 : 4,
         ),
         decoration: BoxDecoration(
-          color: feedbackColor.withOpacity(0.1),
-          border: Border.all(color: feedbackColor.withOpacity(0.3)),
+          color: feedbackColor.withValues(alpha: 0.1),
+          border: Border.all(color: feedbackColor.withValues(alpha: 0.3)),
           borderRadius: BorderRadius.circular(isCompact ? 4 : 6),
         ),
         child: Row(
@@ -228,9 +228,9 @@ class FloatingModeIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: keyBindingService,
-      builder: (context, _, __) {
+    return AnimatedBuilder(
+      animation: keyBindingService,
+      builder: (context, _) {
         if (!keyBindingService.settings.showModeIndicator || !keyBindingService.isEnabled) {
           return const SizedBox.shrink();
         }
@@ -248,7 +248,7 @@ class FloatingModeIndicator extends StatelessWidget {
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: Theme.of(context).dividerColor.withOpacity(0.2),
+                  color: Theme.of(context).dividerColor.withValues(alpha: 0.2),
                 ),
               ),
               child: ModeIndicator(
@@ -273,9 +273,9 @@ class StatusBarModeIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: keyBindingService,
-      builder: (context, _, __) {
+    return AnimatedBuilder(
+      animation: keyBindingService,
+      builder: (context, _) {
         if (!keyBindingService.settings.showModeIndicator || !keyBindingService.isEnabled) {
           return const SizedBox.shrink();
         }
@@ -285,10 +285,10 @@ class StatusBarModeIndicator extends StatelessWidget {
         return Container(
           height: 28,
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+            color: theme.colorScheme.surfaceVariant.withValues(alpha: 0.5),
             border: Border(
               top: BorderSide(
-                color: theme.dividerColor.withOpacity(0.2),
+                color: theme.dividerColor.withValues(alpha: 0.2),
               ),
             ),
           ),
@@ -332,13 +332,13 @@ class StatusBarModeIndicator extends StatelessWidget {
         Icon(
           Icons.help_outline,
           size: 12,
-          color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
         ),
         const SizedBox(width: 2),
         Text(
           'F1',
           style: TextStyle(
-            color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
             fontSize: 9,
             fontFamily: 'monospace',
           ),
@@ -366,13 +366,13 @@ class StatusBarModeIndicator extends StatelessWidget {
         Icon(
           Icons.help_outline,
           size: 12,
-          color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
         ),
         const SizedBox(width: 2),
         Text(
           'F1',
           style: TextStyle(
-            color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
             fontSize: 9,
             fontFamily: 'monospace',
           ),

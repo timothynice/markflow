@@ -155,9 +155,7 @@ void main() {
       });
 
       test('should handle null storage value', () async {
-        SharedPreferences.setMockInitialValues({
-          'markdown.docs': null,
-        });
+        SharedPreferences.setMockInitialValues({});
 
         final docs = await localStore.list();
         expect(docs, isEmpty);
@@ -300,7 +298,9 @@ void main() {
         final legacyJson = prefs.getString('markdown.currentDoc');
         expect(legacyJson, isNotNull);
 
-        final parsed = MdDocument.fromJson(jsonDecode(legacyJson!));
+        final parsed = MdDocument.fromJson(
+          jsonDecode(legacyJson!) as Map<String, dynamic>,
+        );
         expect(parsed.id, equals('legacy-compat'));
         expect(parsed.title, equals('Legacy Compatible'));
       });
@@ -366,7 +366,9 @@ void main() {
 
         final legacyJson = prefs.getString('markdown.currentDoc');
         expect(legacyJson, isNotNull);
-        final legacy = MdDocument.fromJson(jsonDecode(legacyJson!));
+        final legacy = MdDocument.fromJson(
+          jsonDecode(legacyJson!) as Map<String, dynamic>,
+        );
         expect(legacy.id, equals(newDoc.id));
       });
 

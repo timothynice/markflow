@@ -11,17 +11,13 @@ void main() {
     setUpAll(() async {
       // Initialize the service for testing
       service = SyntaxHighlightService.instance;
-      await service.initialize(['dart', 'javascript', 'python']);
+      await service.initialize(languages: ['dart', 'javascript', 'python']);
     });
 
     Widget createTestWidget(Widget child) {
       return MaterialApp(
-        home: ShadApp(
-          child: Scaffold(
-            body: ShadToaster(
-              child: child,
-            ),
-          ),
+        home: Scaffold(
+          body: child,
         ),
       );
     }

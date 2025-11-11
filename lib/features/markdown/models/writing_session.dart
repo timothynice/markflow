@@ -129,7 +129,7 @@ class WritingSession {
         activeDuration: Duration(milliseconds: json['activeDuration'] as int? ?? 0),
         totalDuration: Duration(milliseconds: json['totalDuration'] as int? ?? 0),
         snapshots: (json['snapshots'] as List? ?? [])
-            .map((s) => WritingSnapshot.fromJson(Map<String, dynamic>.from(s)))
+            .map((s) => WritingSnapshot.fromJson((s as Map).cast<String, dynamic>()))
             .toList(),
       );
 }

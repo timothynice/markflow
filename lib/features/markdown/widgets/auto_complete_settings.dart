@@ -148,7 +148,7 @@ class _AutoCompleteSettingsState extends State<AutoCompleteSettings> {
             Text(
               'Characters that trigger auto-completion suggestions',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 16),
@@ -272,7 +272,7 @@ class _AutoCompleteSettingsState extends State<AutoCompleteSettings> {
             Text(
               'Create custom shortcuts for frequently used markdown patterns',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 16),
@@ -285,13 +285,13 @@ class _AutoCompleteSettingsState extends State<AutoCompleteSettings> {
                     Icon(
                       Icons.shortcut,
                       size: 48,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'No custom shortcuts yet',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                   ],
@@ -362,7 +362,7 @@ class _AutoCompleteSettingsState extends State<AutoCompleteSettings> {
             Text(
               'Most frequently used completions',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 16),
@@ -373,7 +373,7 @@ class _AutoCompleteSettingsState extends State<AutoCompleteSettings> {
                 child: Text(
                   'No usage statistics yet',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
               )
@@ -382,7 +382,7 @@ class _AutoCompleteSettingsState extends State<AutoCompleteSettings> {
                 title: Text(entry.key),
                 trailing: Chip(
                   label: Text('${entry.value}'),
-                  backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                 ),
               ))),
           ],

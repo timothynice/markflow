@@ -78,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                                 onNew: _newDocument),
                             const SizedBox(height: 24),
-                            _QuickTips(),
+                            const _QuickTips(),
                           ],
                         ),
                 ),
@@ -140,9 +140,10 @@ class _LastDocCard extends StatelessWidget {
 }
 
 class _QuickTips extends StatelessWidget {
+  const _QuickTips({super.key});
   @override
   Widget build(BuildContext context) {
-    final tips = [
+    const tips = [
       '⌘/Ctrl + B, I for bold/italic',
       'On mobile, use bottom bar to toggle Preview',
       'Copy to AI to share content',

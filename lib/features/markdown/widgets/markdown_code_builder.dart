@@ -11,7 +11,7 @@ class MarkdownCodeBuilder extends MarkdownElementBuilder {
   final double? fontSize;
   final String? fontFamily;
 
-  const MarkdownCodeBuilder({
+  MarkdownCodeBuilder({
     this.showLineNumbers = false,
     this.showCopyButton = true,
     this.showLanguageLabel = true,
@@ -54,34 +54,6 @@ class MarkdownCodeBuilder extends MarkdownElementBuilder {
       }
     }
 
-    // Handle inline code (`code`)
-    if (element.tag == 'code' && element.parent?.tag != 'pre') {
-      final code = element.textContent;
-
-      return Builder(
-        builder: (context) {
-          final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: isDarkMode ? Colors.grey[800] : Colors.grey[100],
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              code,
-              style: TextStyle(
-                fontFamily: fontFamily ?? 'GeistMono',
-                fontSize: (fontSize ?? 14) * 0.9,
-                color: isDarkMode ? Colors.grey[200] : Colors.grey[800],
-                height: 1.2,
-              ),
-            ),
-          );
-        }
-      );
-    }
-
     return null;
   }
 }
@@ -89,7 +61,7 @@ class MarkdownCodeBuilder extends MarkdownElementBuilder {
 /// Enhanced markdown widget that includes syntax highlighting
 class EnhancedMarkdown extends StatelessWidget {
   final String data;
-  final EdgeInsetsGeometry? padding;
+  final EdgeInsets? padding;
   final bool selectable;
   final bool softLineBreak;
   final MarkdownStyleSheet? styleSheet;
@@ -123,7 +95,7 @@ class EnhancedMarkdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return Markdown(
       data: data,
-      padding: padding,
+      padding: padding ?? EdgeInsets.zero,
       controller: controller,
       physics: physics,
       selectable: selectable,

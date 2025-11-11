@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' show PointerDeviceKind;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:markflow/features/markdown/widgets/auto_complete_overlay.dart';
 import 'package:markflow/features/markdown/models/completion_suggestion.dart';

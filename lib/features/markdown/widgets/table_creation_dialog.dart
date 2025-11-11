@@ -1,8 +1,9 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../services/table_service.dart';
+import '../services/table_service.dart' as ts;
 
 /// Dialog for creating new tables with customizable dimensions and properties
 class TableCreationDialog extends StatefulWidget {
@@ -16,12 +17,12 @@ class TableCreationDialog extends StatefulWidget {
   });
 
   /// Show the table creation dialog and return the created table data
-  static Future<TableData?> show(
+  static Future<ts.TableData?> show(
     BuildContext context, {
     int initialRows = 3,
     int initialColumns = 3,
   }) {
-    return showDialog<TableData>(
+    return showDialog<ts.TableData>(
       context: context,
       barrierDismissible: false,
       builder: (context) => TableCreationDialog(
@@ -41,7 +42,7 @@ class _TableCreationDialogState extends State<TableCreationDialog> {
   final List<TextEditingController> _headerControllers = [];
   final List<FocusNode> _headerFocusNodes = [];
   bool _includeHeaders = true;
-  TableAlignment _defaultAlignment = TableAlignment.left;
+  ts.TableAlignment _defaultAlignment = ts.TableAlignment.left;
 
   // Validation
   final _formKey = GlobalKey<FormState>();
@@ -101,29 +102,29 @@ class _TableCreationDialogState extends State<TableCreationDialog> {
     if (!_formKey.currentState!.validate()) return;
 
     // Create columns with headers and alignment
-    final columns = <TableColumn>[];
+    final columns = <ts.TableColumn>[];
     for (int i = 0; i < _columns; i++) {
       final header = _includeHeaders
         ? _headerControllers[i].text.trim()
         : 'Column ${String.fromCharCode(65 + i)}';
 
-      columns.add(TableColumn(
+      columns.add(ts.TableColumn(
         header: header.isEmpty ? 'Column ${String.fromCharCode(65 + i)}' : header,
         alignment: _defaultAlignment,
       ));
     }
 
     // Create rows
-    final rows = <List<TableCell>>[];
+    final rows = <List<ts.TableCell>>[];
     for (int i = 0; i < _rows; i++) {
-      final row = <TableCell>[];
+      final row = <ts.TableCell>[];
       for (int j = 0; j < _columns; j++) {
-        row.add(TableCell());
+        row.add(ts.TableCell());
       }
       rows.add(row);
     }
 
-    final table = TableData(columns: columns, rows: rows);
+    final table = ts.TableData(columns: columns, rows: rows);
     Navigator.of(context).pop(table);
   }
 
@@ -314,14 +315,14 @@ class _TableCreationDialogState extends State<TableCreationDialog> {
     return Wrap(
       spacing: 8,
       children: [
-        _buildAlignmentChip('Left', TableAlignment.left, LucideIcons.alignLeft),
-        _buildAlignmentChip('Center', TableAlignment.center, LucideIcons.alignCenter),
-        _buildAlignmentChip('Right', TableAlignment.right, LucideIcons.alignRight),
+        _buildAlignmentChip('Left', ts.TableAlignment.left, LucideIcons.alignLeft),
+        _buildAlignmentChip('Center', ts.TableAlignment.center, LucideIcons.alignCenter),
+        _buildAlignmentChip('Right', ts.TableAlignment.right, LucideIcons.alignRight),
       ],
     );
   }
 
-  Widget _buildAlignmentChip(String label, TableAlignment alignment, IconData icon) {
+  Widget _buildAlignmentChip(String label, ts.TableAlignment alignment, IconData icon) {
     final isSelected = _defaultAlignment == alignment;
     final theme = Theme.of(context);
 
@@ -394,7 +395,7 @@ class _TableCreationDialogState extends State<TableCreationDialog> {
             ),
 
           // Data rows preview
-          ...List.generate(min(_rows, 3), (rowIndex) {
+          ...List.generate(math.min(_rows, 3), (rowIndex) {
             return Container(
               decoration: BoxDecoration(
                 border: Border(
@@ -451,13 +452,13 @@ class _TableCreationDialogState extends State<TableCreationDialog> {
     );
   }
 
-  TextAlign _getTextAlign(TableAlignment alignment) {
+  TextAlign _getTextAlign(ts.TableAlignment alignment) {
     switch (alignment) {
-      case TableAlignment.center:
+      case ts.TableAlignment.center:
         return TextAlign.center;
-      case TableAlignment.right:
+      case ts.TableAlignment.right:
         return TextAlign.right;
-      case TableAlignment.left:
+      case ts.TableAlignment.left:
       default:
         return TextAlign.left;
     }
@@ -466,7 +467,7 @@ class _TableCreationDialogState extends State<TableCreationDialog> {
 
 /// Quick table creation buttons for common table sizes
 class QuickTableButtons extends StatelessWidget {
-  final void Function(TableData) onTableCreated;
+  final void Function(ts.TableData) onTableCreated;
 
   const QuickTableButtons({
     super.key,
@@ -491,7 +492,7 @@ class QuickTableButtons extends StatelessWidget {
   Widget _buildQuickButton(BuildContext context, String label, int rows, int columns) {
     return OutlinedButton(
       onPressed: () {
-        final table = TableData.create(rows, columns);
+        final table = ts.TableData.create(rows, columns);
         onTableCreated(table);
       },
       child: Text(label),

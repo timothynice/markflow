@@ -26,21 +26,17 @@ class TestHelpers {
     final testThemeController = themeController ?? ThemeController();
 
     return ValueListenableBuilder<ThemeMode>(
-      valueListenable: testThemeController,
+      valueListenable: testThemeController.listenable,
       builder: (context, themeMode, _) {
         Widget app = MultiProvider(
           providers: [
             Provider<MdLocalStore>.value(value: mockStore ?? MockMdLocalStore()),
             ChangeNotifierProvider<ThemeController>.value(value: testThemeController),
           ],
-          child: ShadApp.material(
-            materialThemeBuilder: (context, theme) {
-              return theme.copyWith(
-                colorScheme: themeMode == ThemeMode.dark
-                    ? ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark)
-                    : ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.light),
-              );
-            },
+          child: MaterialApp(
+            themeMode: themeMode,
+            theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.light)),
+            darkTheme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark)),
             home: Scaffold(body: child),
           ),
         );
@@ -69,22 +65,18 @@ class TestHelpers {
     final testThemeController = themeController ?? ThemeController();
 
     return ValueListenableBuilder<ThemeMode>(
-      valueListenable: testThemeController,
+      valueListenable: testThemeController.listenable,
       builder: (context, themeMode, _) {
         Widget app = MultiProvider(
           providers: [
             Provider<MdLocalStore>.value(value: mockStore ?? MockMdLocalStore()),
             ChangeNotifierProvider<ThemeController>.value(value: testThemeController),
           ],
-          child: ShadApp.router(
+          child: MaterialApp.router(
             routerConfig: router,
-            materialThemeBuilder: (context, theme) {
-              return theme.copyWith(
-                colorScheme: themeMode == ThemeMode.dark
-                    ? ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark)
-                    : ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.light),
-              );
-            },
+            themeMode: themeMode,
+            theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.light)),
+            darkTheme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue, brightness: Brightness.dark)),
           ),
         );
 

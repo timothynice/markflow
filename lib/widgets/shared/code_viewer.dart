@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import '../../features/markdown/services/syntax_highlight_service.dart';
-import '../../theme_controller.dart';
 
 /// Reusable code viewer widget with syntax highlighting and copy functionality
 class CodeViewer extends StatefulWidget {
@@ -45,7 +44,8 @@ class _CodeViewerState extends State<CodeViewer> {
     });
 
     try {
-      final isDarkMode = ThemeController.instance.isDarkMode;
+      // Use current theme brightness for syntax highlighting theme
+      final isDarkMode = Theme.of(context).brightness == Brightness.dark;
       final highlightService = SyntaxHighlightService.instance;
 
       final highlightedSpan = await highlightService.highlight(

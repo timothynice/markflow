@@ -49,7 +49,7 @@ class MdDocument {
         content: json['content'] as String,
         updatedAt: DateTime.parse(json['updatedAt'] as String),
         versions: ((json['versions'] as List?) ?? [])
-            .map((e) => MdVersion.fromJson(Map<String, dynamic>.from(e)))
+            .map((e) => MdVersion.fromJson((e as Map).cast<String, dynamic>()))
             .toList(),
       );
 

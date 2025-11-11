@@ -62,11 +62,11 @@ class KeyBindingSettings {
 
   factory KeyBindingSettings.fromJson(Map<String, dynamic> json) {
     return KeyBindingSettings(
-      mode: KeyBindingMode.values[json['mode'] ?? 0],
-      showModeIndicator: json['showModeIndicator'] ?? true,
-      showCommandFeedback: json['showCommandFeedback'] ?? true,
-      enableAdvancedFeatures: json['enableAdvancedFeatures'] ?? true,
-      feedbackDuration: Duration(milliseconds: json['feedbackDurationMs'] ?? 2000),
+      mode: KeyBindingMode.values[(json['mode'] as int?) ?? 0],
+      showModeIndicator: (json['showModeIndicator'] as bool?) ?? true,
+      showCommandFeedback: (json['showCommandFeedback'] as bool?) ?? true,
+      enableAdvancedFeatures: (json['enableAdvancedFeatures'] as bool?) ?? true,
+      feedbackDuration: Duration(milliseconds: (json['feedbackDurationMs'] as int?) ?? 2000),
     );
   }
 }

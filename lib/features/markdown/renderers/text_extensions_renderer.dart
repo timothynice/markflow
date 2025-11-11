@@ -28,7 +28,7 @@ class TextExtensionsRenderer extends MarkdownElementBuilder {
 
         return Container(
           decoration: BoxDecoration(
-            color: isDark ? Colors.yellow.withOpacity(0.3) : Colors.yellow.withOpacity(0.4),
+            color: isDark ? Colors.yellow.withValues(alpha: 0.3) : Colors.yellow.withValues(alpha: 0.4),
             borderRadius: BorderRadius.circular(2),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 2),
@@ -95,9 +95,9 @@ class StrikethroughRenderer extends MarkdownElementBuilder {
           content,
           style: preferredStyle?.copyWith(
             decoration: TextDecoration.lineThrough,
-            decorationColor: theme.colorScheme.onSurface.withOpacity(0.6),
+            decorationColor: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             decorationThickness: 2,
-            color: theme.colorScheme.onSurface.withOpacity(0.7),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         );
       },

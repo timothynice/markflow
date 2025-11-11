@@ -33,10 +33,12 @@ void main() {
         ],
       );
 
-      // Setup mock behavior
-      when(mockStore.findById('test-doc')).thenAnswer((_) async => testDocument);
-      when(mockStore.load()).thenAnswer((_) async => testDocument);
-      when(mockStore.save(any)).thenAnswer((_) async {});
+      // Setup mock behavior (use mockito's null-safe API with tear-offs)
+      when(() => mockStore.findById('test-doc'))
+          .thenAnswer((_) => () => Future<MdDocument?>.value(testDocument));
+      when(() => mockStore.load())
+          .thenAnswer((_) => () => Future<MdDocument>.value(testDocument));
+      // We don't need to stub save(); we only verify calls in tests.
     });
 
     testWidgets('should render markdown editor screen with basic layout', (WidgetTester tester) async {
@@ -139,8 +141,8 @@ void main() {
         // Wait for debounced auto-save
         await tester.pump(const Duration(milliseconds: 400));
 
-        // Verify save was called
-        verify(mockStore.save(any)).called(greaterThan(0));
+        // Verify save was called at least once
+        verify(() => mockStore.save(testDocument)).called(1);
       });
 
       testWidgets('should update preview when content changes', (WidgetTester tester) async {
@@ -261,7 +263,7 @@ void main() {
         await TestHelpers.pumpAndSettleWithDelay(tester);
 
         // Verify store was called to find document by ID
-        verify(mockStore.findById('test-doc')).called(1);
+        verify(() => mockStore.findById('test-doc')).called(1);
 
         // Verify content is displayed
         final textField = find.byType(TextField).first;
@@ -270,8 +272,10 @@ void main() {
 
       testWidgets('should handle missing document gracefully', (WidgetTester tester) async {
         // Setup mock to return null for missing document
-        when(mockStore.findById('missing-doc')).thenAnswer((_) async => null);
-        when(mockStore.load()).thenAnswer((_) async => testDocument);
+        when(() => mockStore.findById('missing-doc'))
+            .thenAnswer((_) => () => Future<MdDocument?>.value(null));
+        when(() => mockStore.load())
+            .thenAnswer((_) => () => Future<MdDocument>.value(testDocument));
 
         await tester.pumpWidget(
           TestHelpers.createTestApp(
@@ -283,7 +287,7 @@ void main() {
         await TestHelpers.pumpAndSettleWithDelay(tester);
 
         // Should fallback to load() method
-        verify(mockStore.load()).called(1);
+        verify(() => mockStore.load()).called(1);
       });
 
       testWidgets('should save document changes periodically', (WidgetTester tester) async {
@@ -303,8 +307,8 @@ void main() {
         // Wait for debounced auto-save (300ms + buffer)
         await tester.pump(const Duration(milliseconds: 400));
 
-        // Verify save was called
-        verify(mockStore.save(any)).called(greaterThan(0));
+        // Verify save was called at least once
+        verify(() => mockStore.save(testDocument)).called(1);
       });
     });
 
@@ -420,8 +424,8 @@ void main() {
         // Switch to styled view (should trigger save)
         await TestHelpers.tapAndSettle(tester, find.text('Styled'));
 
-        // Verify save was called
-        verify(mockStore.save(any)).called(greaterThan(0));
+        // Verify save was called at least once
+        verify(() => mockStore.save(testDocument)).called(1);
       });
     });
 

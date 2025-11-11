@@ -144,7 +144,7 @@ class _AutoCompleteOverlayState extends State<AutoCompleteOverlay>
       child: Material(
         elevation: 8,
         borderRadius: BorderRadius.circular(8),
-        shadowColor: Colors.black.withOpacity(0.2),
+        shadowColor: Colors.black.withValues(alpha: 0.2),
         child: Container(
           constraints: BoxConstraints(
             maxWidth: widget.maxWidth,
@@ -155,7 +155,7 @@ class _AutoCompleteOverlayState extends State<AutoCompleteOverlay>
             color: theme.colorScheme.surface,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: theme.colorScheme.outline.withOpacity(0.2),
+              color: theme.colorScheme.outline.withValues(alpha: 0.2),
             ),
           ),
           child: Column(
@@ -183,7 +183,7 @@ class _AutoCompleteOverlayState extends State<AutoCompleteOverlay>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(8),
           topRight: Radius.circular(8),
@@ -204,14 +204,14 @@ class _AutoCompleteOverlayState extends State<AutoCompleteOverlay>
                 : 'Suggestions for "$filterText"',
               style: theme.textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurface.withOpacity(0.8),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
               ),
             ),
           ),
           Text(
             '${widget.completionResult.suggestions.length}',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
         ],
@@ -258,7 +258,7 @@ class _AutoCompleteOverlayState extends State<AutoCompleteOverlay>
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-            ? theme.colorScheme.primary.withOpacity(0.1)
+            ? theme.colorScheme.primary.withValues(alpha: 0.1)
             : null,
           border: isSelected
             ? Border(
@@ -314,7 +314,7 @@ class _AutoCompleteOverlayState extends State<AutoCompleteOverlay>
                     Text(
                       suggestion.description!,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.7),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -341,7 +341,7 @@ class _AutoCompleteOverlayState extends State<AutoCompleteOverlay>
                     style: theme.textTheme.bodySmall?.copyWith(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.onSurface.withOpacity(0.8),
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
                     ),
                   ),
                 ),
@@ -353,7 +353,7 @@ class _AutoCompleteOverlayState extends State<AutoCompleteOverlay>
                     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: theme.colorScheme.outline.withOpacity(0.3),
+                        color: theme.colorScheme.outline.withValues(alpha: 0.3),
                       ),
                       borderRadius: BorderRadius.circular(3),
                     ),
@@ -362,7 +362,7 @@ class _AutoCompleteOverlayState extends State<AutoCompleteOverlay>
                       style: theme.textTheme.bodySmall?.copyWith(
                         fontSize: 9,
                         fontFamily: 'monospace',
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                   ),
@@ -381,7 +381,7 @@ class _AutoCompleteOverlayState extends State<AutoCompleteOverlay>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(8),
           bottomRight: Radius.circular(8),
@@ -394,7 +394,7 @@ class _AutoCompleteOverlayState extends State<AutoCompleteOverlay>
               '↑↓ Navigate • Enter Select • Esc Cancel',
               style: theme.textTheme.bodySmall?.copyWith(
                 fontSize: 10,
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ),
@@ -406,23 +406,23 @@ class _AutoCompleteOverlayState extends State<AutoCompleteOverlay>
   Color _getIconBackgroundColor(CompletionType type, ThemeData theme) {
     switch (type) {
       case CompletionType.header:
-        return theme.colorScheme.primary.withOpacity(0.1);
+        return theme.colorScheme.primary.withValues(alpha: 0.1);
       case CompletionType.list:
-        return theme.colorScheme.secondary.withOpacity(0.1);
+        return theme.colorScheme.secondary.withValues(alpha: 0.1);
       case CompletionType.link:
-        return theme.colorScheme.tertiary.withOpacity(0.1);
+        return theme.colorScheme.tertiary.withValues(alpha: 0.1);
       case CompletionType.image:
-        return Colors.purple.withOpacity(0.1);
+        return Colors.purple.withValues(alpha: 0.1);
       case CompletionType.codeBlock:
-        return Colors.orange.withOpacity(0.1);
+        return Colors.orange.withValues(alpha: 0.1);
       case CompletionType.table:
-        return Colors.green.withOpacity(0.1);
+        return Colors.green.withValues(alpha: 0.1);
       case CompletionType.emphasis:
-        return Colors.blue.withOpacity(0.1);
+        return Colors.blue.withValues(alpha: 0.1);
       case CompletionType.blockquote:
-        return Colors.indigo.withOpacity(0.1);
+        return Colors.indigo.withValues(alpha: 0.1);
       case CompletionType.horizontalRule:
-        return Colors.grey.withOpacity(0.1);
+        return Colors.grey.withValues(alpha: 0.1);
       case CompletionType.customShortcut:
         return theme.colorScheme.surfaceContainerHighest;
     }
@@ -454,7 +454,7 @@ class _AutoCompleteOverlayState extends State<AutoCompleteOverlay>
   }
 
   Color _getTypeBadgeColor(CompletionType type, ThemeData theme) {
-    return theme.colorScheme.surfaceContainerHighest.withOpacity(0.5);
+    return theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5);
   }
 
   String _getTypeDisplayName(CompletionType type) {

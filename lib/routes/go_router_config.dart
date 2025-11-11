@@ -15,7 +15,7 @@ class GoRouterConfig {
       GoRoute(
         path: '/',
         name: 'home',
-        pageBuilder: (context, state) => NoTransitionPage(
+        pageBuilder: (context, state) => const NoTransitionPage(
           child: const DocumentsScreen(),
         ),
       ),
@@ -36,7 +36,7 @@ class GoRouterConfig {
       GoRoute(
         path: '/docs',
         name: 'docs',
-        pageBuilder: (context, state) => NoTransitionPage(
+        pageBuilder: (context, state) => const NoTransitionPage(
           child: const DocumentsScreen(),
         ),
       ),
@@ -45,7 +45,7 @@ class GoRouterConfig {
       GoRoute(
         path: '/settings',
         name: 'settings',
-        pageBuilder: (context, state) => NoTransitionPage(
+        pageBuilder: (context, state) => const NoTransitionPage(
           child: const SettingsScreen(),
         ),
       ),

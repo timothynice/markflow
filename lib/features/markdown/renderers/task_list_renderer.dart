@@ -7,7 +7,7 @@ class TaskListRenderer extends MarkdownElementBuilder {
   final Function(String taskId, bool checked)? onTaskToggle;
   final bool enableInteraction;
 
-  const TaskListRenderer({
+  TaskListRenderer({
     this.onTaskToggle,
     this.enableInteraction = true,
   });
@@ -89,7 +89,7 @@ class TaskListRenderer extends MarkdownElementBuilder {
               style: preferredStyle?.copyWith(
                 decoration: isChecked ? TextDecoration.lineThrough : null,
                 color: isChecked
-                    ? preferredStyle.color?.withOpacity(0.6)
+                    ? preferredStyle.color?.withValues(alpha: 0.6)
                     : preferredStyle.color,
               ),
             ),

@@ -213,7 +213,7 @@ void main() {
 
       await tester.pumpWidget(createWidget(statistics: emptyStats));
 
-      expect(find.text('0'), findsAtLeastNWidget(3)); // Multiple zero values
+      expect(find.text('0'), findsAtLeastNWidgets(3)); // Multiple zero values
       expect(find.text('Less than 1 min'), findsOneWidget);
     });
 
@@ -224,7 +224,7 @@ void main() {
       ));
 
       // Should show progress indicators
-      expect(find.byType(LinearProgressIndicator), findsAtLeastNWidget(2));
+      expect(find.byType(LinearProgressIndicator), findsAtLeastNWidgets(2));
     });
 
     testWidgets('displays goal deadlines correctly', (tester) async {

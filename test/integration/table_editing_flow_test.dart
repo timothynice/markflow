@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart' show kSecondaryMouseButton;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,7 +36,7 @@ Some text after the table.''',
       );
 
       when(mockStore.findById('test-doc')).thenAnswer((_) async => testDocument);
-      when(mockStore.save(any)).thenAnswer((_) async {});
+      when(mockStore.save(any as MdDocument)).thenAnswer((_) async {});
     });
 
     group('Table Creation Flow', () {
@@ -300,7 +301,7 @@ End text''';
         await tester.pumpAndSettle();
 
         // Right click on a row to show context menu
-        await tester.tap(find.text('John'), buttons: kSecondaryButton);
+        await tester.tap(find.text('John'), buttons: kSecondaryMouseButton);
         await tester.pumpAndSettle();
 
         expect(find.text('Insert row above'), findsOneWidget);
@@ -472,7 +473,7 @@ End text''';
 
         // Changes should be saved automatically
         // This would be verified by checking the document content
-        verify(mockStore.save(any)).called(atLeast(1));
+        verify(mockStore.save(any as MdDocument)).called(1);
       });
 
       testWidgets('should preserve table formatting in markdown', (WidgetTester tester) async {

@@ -217,7 +217,7 @@ void main() {
         await tester.pumpWidget(createTestWidget());
         await tester.pumpAndSettle();
 
-        final caseButton = find.byIcon(Icons.match_case);
+        final caseButton = find.byIcon(Icons.search);
         await tester.tap(caseButton);
         await tester.pumpAndSettle();
 

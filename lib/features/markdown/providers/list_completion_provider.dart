@@ -82,7 +82,7 @@ class ListCompletionProvider extends CompletionProvider with TriggerBasedProvide
         cursorOffset: 0,
       ),
       CompletionSuggestion(
-        insertText: '$nextIndent1. ',
+        insertText: '${nextIndent}1. ',
         displayText: '  1. Nested numbered item',
         description: 'Indented numbered list item',
         type: CompletionType.list,

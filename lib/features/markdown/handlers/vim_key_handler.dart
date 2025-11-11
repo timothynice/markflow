@@ -135,7 +135,7 @@ class VimKeyHandler {
           _moveToLineStart(controller);
         }
         break;
-      case '$':
+      case r'$':
         _moveToLineEnd(controller);
         break;
       case 'g':
@@ -336,7 +336,7 @@ class VimKeyHandler {
       case '0':
         _extendSelectionToLineStart(controller);
         break;
-      case '$':
+      case r'$':
         _extendSelectionToLineEnd(controller);
         break;
 
@@ -395,7 +395,7 @@ class VimKeyHandler {
         _deleteWordsBefore(controller, count);
         _clearCommand();
         return true;
-      } else if (key == '$') {
+      } else if (key == r'$') {
         _deleteToLineEnd(controller);
         _clearCommand();
         return true;
@@ -434,7 +434,7 @@ class VimKeyHandler {
         _service.setVimMode(VimMode.insert);
         _clearCommand();
         return true;
-      } else if (key == '$') {
+      } else if (key == r'$') {
         _deleteToLineEnd(controller);
         _service.setVimMode(VimMode.insert);
         _clearCommand();
@@ -471,7 +471,7 @@ class VimKeyHandler {
         _yankWordsBefore(controller, count);
         _clearCommand();
         return true;
-      } else if (key == '$') {
+      } else if (key == r'$') {
         _yankToLineEnd(controller);
         _clearCommand();
         return true;

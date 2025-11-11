@@ -184,18 +184,17 @@ class _SearchReplaceOverlayState extends State<SearchReplaceOverlay>
                   ShadInput(
                     controller: _searchController,
                     focusNode: _searchFocusNode,
-                    placeholder: 'Search...',
-                    prefix: const Padding(
+                    placeholder: const Text('Search...'),
+                    leading: const Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Icon(Icons.search, size: 16),
                     ),
-                    suffix: _searchController.text.isNotEmpty
-                        ? ShadButton.ghost(
+                    trailing: _searchController.text.isNotEmpty
+                        ? ShadIconButton.ghost(
                             onPressed: () {
                               _searchController.clear();
                               _performSearch();
                             },
-                            size: ShadButtonSize.icon,
                             icon: const Icon(Icons.clear, size: 16),
                           )
                         : null,
@@ -208,9 +207,8 @@ class _SearchReplaceOverlayState extends State<SearchReplaceOverlay>
                     Positioned(
                       right: _searchController.text.isNotEmpty ? 40 : 8,
                       top: 8,
-                      child: ShadButton.ghost(
+                      child: ShadIconButton.ghost(
                         onPressed: () => setState(() => _showHistory = !_showHistory),
-                        size: ShadButtonSize.icon,
                         icon: Icon(
                           _showHistory ? Icons.keyboard_arrow_up : Icons.history,
                           size: 16,
@@ -227,7 +225,7 @@ class _SearchReplaceOverlayState extends State<SearchReplaceOverlay>
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
                     border: Border.all(
-                      color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                      color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
                     ),
                     borderRadius: BorderRadius.circular(6),
                   ),
@@ -296,7 +294,7 @@ class _SearchReplaceOverlayState extends State<SearchReplaceOverlay>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
@@ -312,45 +310,41 @@ class _SearchReplaceOverlayState extends State<SearchReplaceOverlay>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text(
               '0 / 0',
               style: TextStyle(
                 fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
           ),
         const SizedBox(width: 8),
         // Previous button
-        ShadButton.ghost(
+        ShadIconButton.ghost(
           onPressed: hasMatches ? widget.onPrevious : null,
-          size: ShadButtonSize.icon,
           icon: const Icon(Icons.keyboard_arrow_up, size: 16),
         ),
         // Next button
-        ShadButton.ghost(
+        ShadIconButton.ghost(
           onPressed: hasMatches ? widget.onNext : null,
-          size: ShadButtonSize.icon,
           icon: const Icon(Icons.keyboard_arrow_down, size: 16),
         ),
         const SizedBox(width: 4),
         // Toggle replace
         if (widget.showReplace)
-          ShadButton.ghost(
+          ShadIconButton.ghost(
             onPressed: () => setState(() => _replaceExpanded = !_replaceExpanded),
-            size: ShadButtonSize.icon,
             icon: Icon(
               _replaceExpanded ? Icons.unfold_less : Icons.unfold_more,
               size: 16,
             ),
           ),
         // Close button
-        ShadButton.ghost(
+        ShadIconButton.ghost(
           onPressed: _close,
-          size: ShadButtonSize.icon,
           icon: const Icon(Icons.close, size: 16),
         ),
       ],
@@ -371,8 +365,8 @@ class _SearchReplaceOverlayState extends State<SearchReplaceOverlay>
                       child: ShadInput(
                         controller: _replaceController,
                         focusNode: _replaceFocusNode,
-                        placeholder: 'Replace with...',
-                        prefix: const Padding(
+                        placeholder: const Text('Replace with...'),
+                        leading: const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Icon(Icons.find_replace, size: 16),
                         ),
@@ -419,16 +413,11 @@ class _SearchReplaceOverlayState extends State<SearchReplaceOverlay>
         ShadButton.ghost(
           onPressed: _toggleCaseSensitive,
           size: ShadButtonSize.sm,
-          decoration: ShadButtonDecoration(
-            backgroundColor: _searchOptions.caseSensitive
-                ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-                : null,
-          ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                Icons.match_case,
+                Icons.text_fields,
                 size: 14,
                 color: _searchOptions.caseSensitive
                     ? Theme.of(context).colorScheme.primary
@@ -452,11 +441,6 @@ class _SearchReplaceOverlayState extends State<SearchReplaceOverlay>
         ShadButton.ghost(
           onPressed: _toggleWholeWord,
           size: ShadButtonSize.sm,
-          decoration: ShadButtonDecoration(
-            backgroundColor: _searchOptions.wholeWord
-                ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-                : null,
-          ),
           child: Icon(
             Icons.crop_free,
             size: 14,
@@ -469,11 +453,6 @@ class _SearchReplaceOverlayState extends State<SearchReplaceOverlay>
         ShadButton.ghost(
           onPressed: _toggleRegex,
           size: ShadButtonSize.sm,
-          decoration: ShadButtonDecoration(
-            backgroundColor: _searchOptions.useRegex
-                ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-                : null,
-          ),
           child: Text(
             '.*',
             style: TextStyle(
@@ -518,7 +497,7 @@ class _SearchReplaceOverlayState extends State<SearchReplaceOverlay>
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
               ),
             ),
             child: Column(
@@ -653,7 +632,7 @@ class _MobileSearchOverlayState extends State<MobileSearchOverlay>
           borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -670,7 +649,7 @@ class _MobileSearchOverlayState extends State<MobileSearchOverlay>
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                    color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -690,17 +669,16 @@ class _MobileSearchOverlayState extends State<MobileSearchOverlay>
                       child: ShadInput(
                         controller: _searchController,
                         focusNode: _searchFocusNode,
-                        placeholder: 'Search...',
-                        prefix: const Padding(
+                        placeholder: const Text('Search...'),
+                        leading: const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Icon(Icons.search, size: 20),
                         ),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    ShadButton.ghost(
+                    ShadIconButton.ghost(
                       onPressed: _close,
-                      size: ShadButtonSize.icon,
                       icon: const Icon(Icons.close, size: 20),
                     ),
                   ],
@@ -710,8 +688,8 @@ class _MobileSearchOverlayState extends State<MobileSearchOverlay>
                   const SizedBox(height: 12),
                   ShadInput(
                     controller: _replaceController,
-                    placeholder: 'Replace with...',
-                    prefix: const Padding(
+                    placeholder: const Text('Replace with...'),
+                    leading: const Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Icon(Icons.find_replace, size: 20),
                     ),
@@ -726,7 +704,7 @@ class _MobileSearchOverlayState extends State<MobileSearchOverlay>
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
@@ -741,28 +719,26 @@ class _MobileSearchOverlayState extends State<MobileSearchOverlay>
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+                          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           '0 / 0',
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                         ),
                       ),
                     const Spacer(),
                     // Navigation
-                    ShadButton.outline(
+                    ShadIconButton.ghost(
                       onPressed: widget.searchResult.hasMatches ? widget.onPrevious : null,
-                      size: ShadButtonSize.icon,
-                      child: const Icon(Icons.keyboard_arrow_up),
+                      icon: const Icon(Icons.keyboard_arrow_up),
                     ),
                     const SizedBox(width: 8),
-                    ShadButton.outline(
+                    ShadIconButton.ghost(
                       onPressed: widget.searchResult.hasMatches ? widget.onNext : null,
-                      size: ShadButtonSize.icon,
-                      child: const Icon(Icons.keyboard_arrow_down),
+                      icon: const Icon(Icons.keyboard_arrow_down),
                     ),
                     if (_replaceMode) ...[
                       const SizedBox(width: 8),

@@ -60,7 +60,9 @@ class MarkdownEditorScreen extends StatefulWidget {
 class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
   final _controller = TextEditingController();
   final _scrollController = ScrollController();
-  final _editorFocusNode = FocusNode();
+  // Dedicated focus nodes to avoid ancestor/descendant focus cycles
+  final _editorFocusNode = FocusNode(debugLabel: 'editor-textfield');
+  final _keyboardFocusNode = FocusNode(debugLabel: 'editor-keyboard-listener');
   final _editorKey = GlobalKey();
   MdDocument? _doc;
   Timer? _debounce;
@@ -88,7 +90,7 @@ class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
 
   // Auto-completion state
   final _autoCompleteService = AutoCompleteService();
-  bool _showAutoComplete = false;
+  bool _autoCompleteVisible = false;
   OverlayEntry? _autoCompleteOverlay;
 
   // Writing statistics and session state
@@ -263,6 +265,7 @@ class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
     _controller.dispose();
     _scrollController.dispose();
     _editorFocusNode.dispose();
+    _keyboardFocusNode.dispose();
     _searchService.dispose();
     _autoCompleteService.dispose();
     _sessionService.dispose();
@@ -288,7 +291,9 @@ class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
 
     return DefaultTabController(
       length: 2,
-      child: Scaffold(
+      child: Stack(
+        children: [
+          Scaffold(
         resizeToAvoidBottomInset: true,
         body: Column(
           children: [
@@ -362,21 +367,21 @@ class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
             const _BottomViewToggleBar(),
           ],
         ),
+          ),
+          // Overlays stacked above Scaffold
+          ...(_showSearchOverlay ? _buildSearchOverlay(context, isMobile) : const <Widget>[]),
+          if (_showKeyBindingHelp)
+            KeyBindingHelpOverlay(
+              keyBindingService: _keyBindingService,
+              onClose: () => setState(() => _showKeyBindingHelp = false),
+            ),
+          if (_showFocusMode && _keyBindingService.isEnabled)
+            FloatingModeIndicator(
+              keyBindingService: _keyBindingService,
+              alignment: Alignment.topRight,
+            ),
+        ],
       ),
-      // Search overlay
-      if (_showSearchOverlay) ..._buildSearchOverlay(context, isMobile),
-      // Key binding help overlay
-      if (_showKeyBindingHelp)
-        KeyBindingHelpOverlay(
-          keyBindingService: _keyBindingService,
-          onClose: () => setState(() => _showKeyBindingHelp = false),
-        ),
-      // Floating mode indicator for focus mode
-      if (_showFocusMode && _keyBindingService.isEnabled)
-        FloatingModeIndicator(
-          keyBindingService: _keyBindingService,
-          alignment: Alignment.topRight,
-        ),
     );
   }
 
@@ -467,63 +472,72 @@ class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
           // Search button
           ShadButton.ghost(
             onPressed: _showSearch,
-            icon: const Icon(Icons.search, size: 18),
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            child: const Text(
-              'Search',
-              style: TextStyle(fontWeight: FontWeight.w600),
+            child: const Row(
+              children: [
+                Icon(Icons.search, size: 18),
+                SizedBox(width: 6),
+                Text('Search', style: TextStyle(fontWeight: FontWeight.w600)),
+              ],
             ),
           ),
           const SizedBox(width: 8),
           // Outline toggle button
           ShadButton.ghost(
             onPressed: _toggleOutline,
-            icon: Icon(
-              _outlineVisible ? Icons.menu_open : Icons.menu,
-              size: 18,
-            ),
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            child: Text(
-              'Outline',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: _outlineVisible
-                  ? Theme.of(context).colorScheme.primary
-                  : null,
-              ),
+            child: Row(
+              children: [
+                Icon(
+                  _outlineVisible ? Icons.menu_open : Icons.menu,
+                  size: 18,
+                  color: _outlineVisible ? Theme.of(context).colorScheme.primary : null,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'Outline',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: _outlineVisible ? Theme.of(context).colorScheme.primary : null,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(width: 8),
           // Statistics toggle button
           ShadButton.ghost(
             onPressed: _toggleStatisticsPanel,
-            icon: Icon(
-              Icons.analytics_outlined,
-              size: 18,
-            ),
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            child: Text(
-              'Stats',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: _showStatisticsPanel
-                  ? Theme.of(context).colorScheme.primary
-                  : null,
-              ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.analytics_outlined,
+                  size: 18,
+                  color: _showStatisticsPanel ? Theme.of(context).colorScheme.primary : null,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'Stats',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: _showStatisticsPanel ? Theme.of(context).colorScheme.primary : null,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(width: 8),
           // Focus mode button
           ShadButton.ghost(
             onPressed: _enterFocusMode,
-            icon: const Icon(
-              Icons.center_focus_strong,
-              size: 18,
-            ),
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            child: const Text(
-              'Focus',
-              style: TextStyle(fontWeight: FontWeight.w600),
+            child: const Row(
+              children: [
+                Icon(Icons.center_focus_strong, size: 18),
+                SizedBox(width: 6),
+                Text('Focus', style: TextStyle(fontWeight: FontWeight.w600)),
+              ],
             ),
           ),
           const SizedBox(width: 8),
@@ -531,14 +545,13 @@ class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
           if (_keyBindingService.isEnabled)
             ShadButton.ghost(
               onPressed: () => setState(() => _showKeyBindingHelp = true),
-              icon: const Icon(
-                Icons.keyboard,
-                size: 18,
-              ),
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              child: const Text(
-                'Keys',
-                style: TextStyle(fontWeight: FontWeight.w600),
+              child: const Row(
+                children: [
+                  Icon(Icons.keyboard, size: 18),
+                  SizedBox(width: 6),
+                  Text('Keys', style: TextStyle(fontWeight: FontWeight.w600)),
+                ],
               ),
             ),
           const Spacer(),
@@ -648,98 +661,95 @@ class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
     // Keep caret above the bottom toggle and keyboard without visually adding extra padding
     final caretSafeBottom = viewInsets.bottom + 72; // 56 bottom bar + 16 comfort
     return KeyboardListener(
-      focusNode: _editorFocusNode,
+      // Use a separate focus node for the keyboard listener to avoid attaching
+      // the same node to both ancestor and descendant focusables.
+      focusNode: _keyboardFocusNode,
       onKeyEvent: _handleKeyEvent,
       child: Shortcuts(
-      shortcuts: <LogicalKeySet, Intent>{
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyB): const _BoldIntent(),
-        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyB): const _BoldIntent(),
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyI): const _ItalicIntent(),
-        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyI): const _ItalicIntent(),
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyK): const _LinkIntent(),
-        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyK): const _LinkIntent(),
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyT): const _TableEditIntent(),
-        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyT): const _TableEditIntent(),
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.backslash): const _ToggleOutlineIntent(),
-        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.backslash): const _ToggleOutlineIntent(),
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.digit1): const _JumpToHeadingIntent(1),
-        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.digit1): const _JumpToHeadingIntent(1),
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.digit2): const _JumpToHeadingIntent(2),
-        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.digit2): const _JumpToHeadingIntent(2),
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.digit3): const _JumpToHeadingIntent(3),
-        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.digit3): const _JumpToHeadingIntent(3),
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyF): const _SearchIntent(),
-        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyF): const _SearchIntent(),
-        LogicalKeySet(LogicalKeyboardKey.f3): const _FindNextIntent(),
-        LogicalKeySet(LogicalKeyboardKey.shift, LogicalKeyboardKey.f3): const _FindPreviousIntent(),
-        LogicalKeySet(LogicalKeyboardKey.escape): const _EscapeIntent(),
-        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.space): const _TriggerAutoCompleteIntent(),
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.space): const _TriggerAutoCompleteIntent(),
-        LogicalKeySet(LogicalKeyboardKey.arrowDown): const _AutoCompleteNextIntent(),
-        LogicalKeySet(LogicalKeyboardKey.arrowUp): const _AutoCompletePreviousIntent(),
-        LogicalKeySet(LogicalKeyboardKey.tab): const _AutoCompleteAcceptIntent(),
-        LogicalKeySet(LogicalKeyboardKey.enter): const _AutoCompleteAcceptIntent(),
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.enter): const _FocusModeIntent(),
-        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.enter): const _FocusModeIntent(),
-        LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.period): const _ToggleStatsIntent(),
-        LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.period): const _ToggleStatsIntent(),
-      },
-      child: Actions(
-        actions: <Type, Action<Intent>>{
-          _BoldIntent: CallbackAction<_BoldIntent>(onInvoke: (i) => _wrapSelection('**', '**')),
-          _ItalicIntent: CallbackAction<_ItalicIntent>(onInvoke: (i) => _wrapSelection('*', '*')),
-          _LinkIntent: CallbackAction<_LinkIntent>(onInvoke: (i) => _insertLink()),
-          _TableEditIntent: CallbackAction<_TableEditIntent>(onInvoke: (i) => _enterTableEditMode()),
-          _ToggleOutlineIntent: CallbackAction<_ToggleOutlineIntent>(onInvoke: (i) => _toggleOutline()),
-          _JumpToHeadingIntent: CallbackAction<_JumpToHeadingIntent>(onInvoke: (i) => _jumpToNextHeading(i.level)),
-          _SearchIntent: CallbackAction<_SearchIntent>(onInvoke: (i) => _showSearch()),
-          _FindNextIntent: CallbackAction<_FindNextIntent>(onInvoke: (i) => _searchService.navigateToNext()),
-          _FindPreviousIntent: CallbackAction<_FindPreviousIntent>(onInvoke: (i) => _searchService.navigateToPrevious()),
-          _EscapeIntent: CallbackAction<_EscapeIntent>(onInvoke: (i) => _handleEscape()),
-          _TriggerAutoCompleteIntent: CallbackAction<_TriggerAutoCompleteIntent>(onInvoke: (i) => _triggerAutoComplete()),
-          _AutoCompleteNextIntent: CallbackAction<_AutoCompleteNextIntent>(onInvoke: (i) => _autoCompleteNext()),
-          _AutoCompletePreviousIntent: CallbackAction<_AutoCompletePreviousIntent>(onInvoke: (i) => _autoCompletePrevious()),
-          _AutoCompleteAcceptIntent: CallbackAction<_AutoCompleteAcceptIntent>(onInvoke: (i) => _acceptAutoComplete()),
-          _FocusModeIntent: CallbackAction<_FocusModeIntent>(onInvoke: (i) => _enterFocusMode()),
-          _ToggleStatsIntent: CallbackAction<_ToggleStatsIntent>(onInvoke: (i) => _toggleStatisticsPanel()),
+        shortcuts: <LogicalKeySet, Intent>{
+          LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyB): const _BoldIntent(),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyB): const _BoldIntent(),
+          LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyI): const _ItalicIntent(),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyI): const _ItalicIntent(),
+          LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyK): const _LinkIntent(),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyK): const _LinkIntent(),
+          LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyT): const _TableEditIntent(),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyT): const _TableEditIntent(),
+          LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.backslash): const _ToggleOutlineIntent(),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.backslash): const _ToggleOutlineIntent(),
+          LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.digit1): const _JumpToHeadingIntent(1),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.digit1): const _JumpToHeadingIntent(1),
+          LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.digit2): const _JumpToHeadingIntent(2),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.digit2): const _JumpToHeadingIntent(2),
+          LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.digit3): const _JumpToHeadingIntent(3),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.digit3): const _JumpToHeadingIntent(3),
+          LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.keyF): const _SearchIntent(),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.keyF): const _SearchIntent(),
+          LogicalKeySet(LogicalKeyboardKey.f3): const _FindNextIntent(),
+          LogicalKeySet(LogicalKeyboardKey.shift, LogicalKeyboardKey.f3): const _FindPreviousIntent(),
+          LogicalKeySet(LogicalKeyboardKey.escape): const _EscapeIntent(),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.space): const _TriggerAutoCompleteIntent(),
+          LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.space): const _TriggerAutoCompleteIntent(),
+          LogicalKeySet(LogicalKeyboardKey.arrowDown): const _AutoCompleteNextIntent(),
+          LogicalKeySet(LogicalKeyboardKey.arrowUp): const _AutoCompletePreviousIntent(),
+          LogicalKeySet(LogicalKeyboardKey.tab): const _AutoCompleteAcceptIntent(),
+          LogicalKeySet(LogicalKeyboardKey.enter): const _AutoCompleteAcceptIntent(),
+          LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.enter): const _FocusModeIntent(),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.enter): const _FocusModeIntent(),
+          LogicalKeySet(LogicalKeyboardKey.meta, LogicalKeyboardKey.period): const _ToggleStatsIntent(),
+          LogicalKeySet(LogicalKeyboardKey.control, LogicalKeyboardKey.period): const _ToggleStatsIntent(),
         },
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-          child: TextField(
-            key: _editorKey,
-            controller: _controller,
-            focusNode: _editorFocusNode,
-            scrollController: _scrollController,
-            maxLines: null,
-            // Make the editor take all available height; scroll when content exceeds
-            expands: true,
-            // Ensure content anchors to the top when expanded
-            textAlignVertical: TextAlignVertical.top,
-            textAlign: TextAlign.start,
-            keyboardType: TextInputType.multiline,
-            textInputAction: TextInputAction.newline,
-            autocorrect: false,
-            enableSuggestions: false,
-            onChanged: _onTextChanged,
-            // Ensure the caret scrolls above the keyboard and bottom bar
-            scrollPadding: EdgeInsets.only(bottom: caretSafeBottom),
-            style: GoogleFonts.jetBrainsMono().copyWith(
-              fontSize: 16,
-              height: 1.6,
-              fontWeight: FontWeight.w400,
-              fontFamilyFallback: const ['GeistMono', 'monospace'],
-            ),
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              // Collapsed decoration prevents any extra vertical layout that can center content
-              isCollapsed: true,
-              filled: false,
+        child: Actions(
+          actions: <Type, Action<Intent>>{
+            _BoldIntent: CallbackAction<_BoldIntent>(onInvoke: (i) => _wrapSelection('**', '**')),
+            _ItalicIntent: CallbackAction<_ItalicIntent>(onInvoke: (i) => _wrapSelection('*', '*')),
+            _LinkIntent: CallbackAction<_LinkIntent>(onInvoke: (i) => _insertLink()),
+            _TableEditIntent: CallbackAction<_TableEditIntent>(onInvoke: (i) => _enterTableEditMode()),
+            _ToggleOutlineIntent: CallbackAction<_ToggleOutlineIntent>(onInvoke: (i) => _toggleOutline()),
+            _JumpToHeadingIntent: CallbackAction<_JumpToHeadingIntent>(onInvoke: (i) => _jumpToNextHeading(i.level)),
+            _SearchIntent: CallbackAction<_SearchIntent>(onInvoke: (i) => _showSearch()),
+            _FindNextIntent: CallbackAction<_FindNextIntent>(onInvoke: (i) => _searchService.navigateToNext()),
+            _FindPreviousIntent: CallbackAction<_FindPreviousIntent>(onInvoke: (i) => _searchService.navigateToPrevious()),
+            _EscapeIntent: CallbackAction<_EscapeIntent>(onInvoke: (i) => _handleEscape()),
+            _TriggerAutoCompleteIntent: CallbackAction<_TriggerAutoCompleteIntent>(onInvoke: (i) => _triggerAutoComplete()),
+            _AutoCompleteNextIntent: CallbackAction<_AutoCompleteNextIntent>(onInvoke: (i) => _autoCompleteNext()),
+            _AutoCompletePreviousIntent: CallbackAction<_AutoCompletePreviousIntent>(onInvoke: (i) => _autoCompletePrevious()),
+            _AutoCompleteAcceptIntent: CallbackAction<_AutoCompleteAcceptIntent>(onInvoke: (i) => _acceptAutoComplete()),
+            _FocusModeIntent: CallbackAction<_FocusModeIntent>(onInvoke: (i) => _enterFocusMode()),
+            _ToggleStatsIntent: CallbackAction<_ToggleStatsIntent>(onInvoke: (i) => _toggleStatisticsPanel()),
+          },
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+            child: TextField(
+              key: _editorKey,
+              controller: _controller,
+              focusNode: _editorFocusNode,
+              scrollController: _scrollController,
+              maxLines: null,
+              expands: true,
+              textAlignVertical: TextAlignVertical.top,
+              textAlign: TextAlign.start,
+              keyboardType: TextInputType.multiline,
+              textInputAction: TextInputAction.newline,
+              autocorrect: false,
+              enableSuggestions: false,
+              onChanged: _onTextChanged,
+              scrollPadding: EdgeInsets.only(bottom: caretSafeBottom),
+              style: GoogleFonts.jetBrainsMono().copyWith(
+                fontSize: 16,
+                height: 1.6,
+                fontWeight: FontWeight.w400,
+                fontFamilyFallback: const ['GeistMono', 'monospace'],
+              ),
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                isCollapsed: true,
+                filled: false,
+              ),
             ),
           ),
         ),
-      ), // Close Actions
-      ), // Close Shortcuts
-      ), // Close KeyboardListener
+      ),
     );
   }
 
@@ -1176,8 +1186,8 @@ class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
         text: match.text,
         style: TextStyle(
           backgroundColor: match.isActive
-              ? Theme.of(context).colorScheme.primary.withOpacity(0.4)
-              : Theme.of(context).colorScheme.primary.withOpacity(0.2),
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.4)
+              : Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
           color: match.isActive
               ? Theme.of(context).colorScheme.onPrimary
               : null,
@@ -1260,7 +1270,7 @@ class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
       setState(() => _showKeyBindingHelp = false);
     } else if (_showFocusMode) {
       _exitFocusMode();
-    } else if (_showAutoComplete) {
+    } else if (_autoCompleteVisible) {
       _hideAutoComplete();
     } else if (_showSearchOverlay) {
       _hideSearch();
@@ -1367,17 +1377,17 @@ class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
 
     final result = _autoCompleteService.currentResult;
     if (result.isActive && result.hasSuggestions) {
-      _showAutoComplete();
+      _openAutoCompleteOverlay();
     } else {
       _hideAutoComplete();
     }
   }
 
-  void _showAutoComplete() {
-    if (_showAutoComplete) return;
+  void _openAutoCompleteOverlay() {
+    if (_autoCompleteVisible) return;
 
     setState(() {
-      _showAutoComplete = true;
+      _autoCompleteVisible = true;
     });
 
     _hideAutoComplete(); // Remove any existing overlay first
@@ -1404,10 +1414,10 @@ class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
   }
 
   void _hideAutoComplete() {
-    if (!_showAutoComplete) return;
+    if (!_autoCompleteVisible) return;
 
     setState(() {
-      _showAutoComplete = false;
+      _autoCompleteVisible = false;
     });
 
     _autoCompleteOverlay?.remove();
@@ -1444,7 +1454,7 @@ class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
   }
 
   void _autoCompleteNext() {
-    if (_showAutoComplete) {
+    if (_autoCompleteVisible) {
       _autoCompleteService.selectNext();
       return;
     }
@@ -1453,7 +1463,7 @@ class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
   }
 
   void _autoCompletePrevious() {
-    if (_showAutoComplete) {
+    if (_autoCompleteVisible) {
       _autoCompleteService.selectPrevious();
       return;
     }
@@ -1462,7 +1472,7 @@ class _MarkdownEditorScreenState extends State<MarkdownEditorScreen> {
   }
 
   void _acceptAutoComplete() {
-    if (_showAutoComplete) {
+    if (_autoCompleteVisible) {
       final suggestion = _autoCompleteService.currentResult.selectedSuggestion;
       if (suggestion != null) {
         _applySuggestion(suggestion);

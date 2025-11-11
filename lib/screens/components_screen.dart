@@ -174,7 +174,7 @@ class _ComponentsScreenState extends State<ComponentsScreen> {
               const Spacer(),
             ],
           ),
-          SizedBox(height: ComponentScreenConstants.headerSpacing),
+          const SizedBox(height: ComponentScreenConstants.headerSpacing),
 
           // Description
           Text(
@@ -184,7 +184,7 @@ class _ComponentsScreenState extends State<ComponentsScreen> {
               color: Colors.grey.shade600,
             ),
           ),
-          SizedBox(height: ComponentScreenConstants.descriptionSpacing),
+          const SizedBox(height: ComponentScreenConstants.descriptionSpacing),
 
           // Components Section
           Expanded(
@@ -307,7 +307,7 @@ class _ComponentsScreenState extends State<ComponentsScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: ComponentScreenConstants.rightSidebarButtonSpacing),
+          const SizedBox(height: ComponentScreenConstants.rightSidebarButtonSpacing),
           ShadButton(
             onPressed: () => launchUrl(Uri.parse(AppConstants.dreamFlowUrl)),
             child: const Text(AppConstants.openInDreamflowText),

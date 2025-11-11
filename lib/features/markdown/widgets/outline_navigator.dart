@@ -170,15 +170,12 @@ class _OutlineNavigatorState extends State<OutlineNavigator> with TickerProvider
               ),
             ),
           ),
-          ShadButton.ghost(
+          ShadIconButton.ghost(
             onPressed: widget.onToggleVisibility,
             icon: Icon(
               widget.isVisible ? Icons.chevron_left : Icons.chevron_right,
               size: 16,
             ),
-            padding: const EdgeInsets.all(4),
-            width: 28,
-            height: 28,
           ),
         ],
       ),
@@ -385,6 +382,12 @@ class _OutlineNavigatorState extends State<OutlineNavigator> with TickerProvider
 }
 
 // Keyboard navigation intents
-class _NavigateUpIntent extends Intent {}
-class _NavigateDownIntent extends Intent {}
-class _SelectItemIntent extends Intent {}
+class _NavigateUpIntent extends Intent {
+  const _NavigateUpIntent();
+}
+class _NavigateDownIntent extends Intent {
+  const _NavigateDownIntent();
+}
+class _SelectItemIntent extends Intent {
+  const _SelectItemIntent();
+}

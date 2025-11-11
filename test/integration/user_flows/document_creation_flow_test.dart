@@ -398,10 +398,6 @@ Testing mobile-specific functionality.
       });
     });
 
-    // Cleanup after tests
-    tearDown(() async {
-      // Reset window size to default
-      await tester?.binding.setSurfaceSize(null);
-    });
+    // Cleanup after tests (no-op)
   });
 }

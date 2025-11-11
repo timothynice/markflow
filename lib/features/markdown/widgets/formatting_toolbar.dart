@@ -75,7 +75,7 @@ class FormattingToolbar extends StatelessWidget {
             _iconButton(context, LucideIcons.list, 'Bulleted list', onBulletedList),
             _iconButton(context, LucideIcons.listOrdered, 'Numbered list', onNumberedList),
             if (onTaskList != null)
-              _iconButton(context, LucideIcons.checkSquare, 'Task list', onTaskList!),
+              _iconButton(context, Icons.check_box_outlined, 'Task list', onTaskList!),
             _tableButton(context),
             _divider(context),
             _iconButton(context, LucideIcons.image, 'Image', onImage),
@@ -201,7 +201,7 @@ class FormattingToolbar extends StatelessWidget {
           value: 'simple',
           child: Row(
             children: [
-              Icon(LucideIcons.edit, size: 16),
+              Icon(Icons.edit, size: 16),
               SizedBox(width: 8),
               Text('Simple Markdown'),
             ],

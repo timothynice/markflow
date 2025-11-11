@@ -434,21 +434,28 @@ class _FocusModeOverlayState extends State<FocusModeOverlay>
   }) {
     return Tooltip(
       message: tooltip,
-      child: ShadButton.ghost(
-        onPressed: onPressed,
-        icon: Icon(
-          icon,
-          size: 18,
-          color: isDestructive
-              ? Colors.red
-              : isActive
-                  ? widget.settings.textColor
-                  : widget.settings.textColor.withValues(alpha: 0.7),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isActive
+              ? widget.settings.textColor.withValues(alpha: 0.1)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
         ),
-        padding: const EdgeInsets.all(8),
-        backgroundColor: isActive
-            ? widget.settings.textColor.withValues(alpha: 0.1)
-            : Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: ShadIconButton.ghost(
+            onPressed: onPressed,
+            icon: Icon(
+              icon,
+              size: 18,
+              color: isDestructive
+                  ? Colors.red
+                  : isActive
+                      ? widget.settings.textColor
+                      : widget.settings.textColor.withValues(alpha: 0.7),
+            ),
+          ),
+        ),
       ),
     );
   }

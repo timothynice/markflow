@@ -146,7 +146,7 @@ class WritingSessionService {
     if (sessionsJson == null) return [];
 
     final sessions = (jsonDecode(sessionsJson) as List)
-        .map((json) => WritingSession.fromJson(Map<String, dynamic>.from(json)))
+        .map((json) => WritingSession.fromJson(Map<String, dynamic>.from(json as Map)))
         .toList();
 
     // Filter by date range if provided
@@ -184,7 +184,7 @@ class WritingSessionService {
     if (statsJson == null) return [];
 
     final stats = (jsonDecode(statsJson) as List)
-        .map((json) => DailyStats.fromJson(Map<String, dynamic>.from(json)))
+        .map((json) => DailyStats.fromJson(Map<String, dynamic>.from(json as Map)))
         .toList();
 
     // Filter by date range if provided
@@ -268,7 +268,7 @@ class WritingSessionService {
     if (goalsJson == null) return [];
 
     var goals = (jsonDecode(goalsJson) as List)
-        .map((json) => WritingGoal.fromJson(Map<String, dynamic>.from(json)))
+        .map((json) => WritingGoal.fromJson(Map<String, dynamic>.from(json as Map)))
         .toList();
 
     if (activeOnly) {
@@ -325,7 +325,9 @@ class WritingSessionService {
 
     if (sessionJson != null) {
       try {
-        _currentSession = WritingSession.fromJson(jsonDecode(sessionJson));
+        _currentSession = WritingSession.fromJson(
+          jsonDecode(sessionJson) as Map<String, dynamic>,
+        );
         _lastActivity = DateTime.now();
 
         // Resume session tracking
@@ -384,7 +386,7 @@ class WritingSessionService {
     List<WritingSession> sessions = [];
     if (sessionsJson != null) {
       sessions = (jsonDecode(sessionsJson) as List)
-          .map((json) => WritingSession.fromJson(Map<String, dynamic>.from(json)))
+          .map((json) => WritingSession.fromJson(Map<String, dynamic>.from(json as Map)))
           .toList();
     }
 
@@ -407,7 +409,7 @@ class WritingSessionService {
     List<DailyStats> stats = [];
     if (statsJson != null) {
       stats = (jsonDecode(statsJson) as List)
-          .map((json) => DailyStats.fromJson(Map<String, dynamic>.from(json)))
+          .map((json) => DailyStats.fromJson(Map<String, dynamic>.from(json as Map)))
           .toList();
     }
 

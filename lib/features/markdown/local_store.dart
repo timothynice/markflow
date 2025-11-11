@@ -58,7 +58,7 @@ class MdLocalStore {
     if (raw == null || raw.isEmpty) return [];
     try {
       final list = (jsonDecode(raw) as List)
-          .map((e) => MdDocument.fromJson(Map<String, dynamic>.from(e)))
+          .map((e) => MdDocument.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList();
       list.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
       return list;

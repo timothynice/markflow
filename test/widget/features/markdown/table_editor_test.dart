@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart' show kSecondaryMouseButton;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -251,7 +252,7 @@ void main() {
         ));
 
         // Right click on a cell (simulate with secondary tap)
-        await tester.tap(find.text('John'), buttons: kSecondaryButton);
+        await tester.tap(find.text('John'), buttons: kSecondaryMouseButton);
         await tester.pumpAndSettle();
 
         // Should show context menu with options
@@ -274,7 +275,7 @@ void main() {
         ));
 
         // Right click and select insert row above
-        await tester.tap(find.text('Jane'), buttons: kSecondaryButton);
+        await tester.tap(find.text('Jane'), buttons: kSecondaryMouseButton);
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Insert row above'));
@@ -287,7 +288,7 @@ void main() {
         ));
 
         // Right click on header and insert column
-        await tester.tap(find.text('Age'), buttons: kSecondaryButton);
+        await tester.tap(find.text('Age'), buttons: kSecondaryMouseButton);
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Insert column left'));
@@ -300,7 +301,7 @@ void main() {
         ));
 
         // Right click on row number and delete
-        await tester.tap(find.text('2'), buttons: kSecondaryButton);
+        await tester.tap(find.text('2'), buttons: kSecondaryMouseButton);
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Delete row'));
@@ -313,7 +314,7 @@ void main() {
         ));
 
         // Right click and clear table
-        await tester.tap(find.text('John'), buttons: kSecondaryButton);
+        await tester.tap(find.text('John'), buttons: kSecondaryMouseButton);
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Clear table'));
@@ -378,7 +379,7 @@ void main() {
         ));
 
         // Right click should not show context menu
-        await tester.tap(find.text('John'), buttons: kSecondaryButton);
+        await tester.tap(find.text('John'), buttons: kSecondaryMouseButton);
         await tester.pumpAndSettle();
 
         expect(find.text('Insert row above'), findsNothing);

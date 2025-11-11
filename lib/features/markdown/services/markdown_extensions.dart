@@ -9,9 +9,9 @@ class MarkdownExtensions {
       md.HeaderWithIdSyntax(),
       md.SetextHeaderWithIdSyntax(),
       md.TableSyntax(),
-      TaskListSyntax(),
-      DefinitionListSyntax(),
-      FootnoteDefinitionSyntax(),
+      TaskListBlockSyntax(),
+      DefinitionListBlockSyntax(),
+      FootnoteDefinitionBlockSyntax(),
     ];
   }
 
@@ -22,35 +22,31 @@ class MarkdownExtensions {
       md.StrikethroughSyntax(),
       md.AutolinkSyntax(),
       md.AutolinkExtensionSyntax(),
-      FootnoteSyntax(),
-      HighlightSyntax(),
-      SubscriptSyntax(),
-      SuperscriptSyntax(),
+      FootnoteInlineSyntax(),
+      HighlightInlineSyntax(),
+      SubscriptInlineSyntax(),
+      SuperscriptInlineSyntax(),
     ];
   }
 
-  /// Get all extension processors
-  static List<md.ExtensionProcessor> getExtensionProcessors() {
-    return [
-      FootnoteExtensionProcessor(),
-      TaskListExtensionProcessor(),
-    ];
-  }
+  // Note: No extension processors are used for markdown >= 7.
 }
 
 /// Syntax for task list items (- [ ] and - [x])
-class TaskListSyntax extends md.BlockSyntax {
+class TaskListBlockSyntax extends md.BlockSyntax {
   @override
   RegExp get pattern => RegExp(r'^[ ]{0,3}[-*+] \[[ xX]\] ');
 
   @override
   md.Node parse(md.BlockParser parser) {
-    final match = pattern.firstMatch(parser.current);
+    final currentLine = (parser.current is md.Line)
+        ? (parser.current as md.Line).content
+        : (parser.current as String);
+    final match = pattern.firstMatch(currentLine);
     if (match == null) return md.Text('');
 
-    final line = parser.current;
-    final isChecked = line.contains(RegExp(r'\[[xX]\]'));
-    final content = line.substring(match.end).trim();
+    final isChecked = currentLine.contains(RegExp(r'\[[xX]\]'));
+    final content = currentLine.substring(match.end).trim();
 
     parser.advance();
 
@@ -63,7 +59,7 @@ class TaskListSyntax extends md.BlockSyntax {
 }
 
 /// Syntax for definition lists
-class DefinitionListSyntax extends md.BlockSyntax {
+class DefinitionListBlockSyntax extends md.BlockSyntax {
   @override
   RegExp get pattern => RegExp(r'^[ ]{0,3}:[ \t]');
 
@@ -71,9 +67,9 @@ class DefinitionListSyntax extends md.BlockSyntax {
   md.Node parse(md.BlockParser parser) {
     final definitions = <md.Element>[];
 
-    while (!parser.isDone && pattern.hasMatch(parser.current)) {
-      final line = parser.current;
-      final content = line.substring(line.indexOf(':') + 1).trim();
+    while (!parser.isDone && pattern.hasMatch((parser.current is md.Line) ? (parser.current as md.Line).content : (parser.current as String))) {
+      final lineText = (parser.current is md.Line) ? (parser.current as md.Line).content : (parser.current as String);
+      final content = lineText.substring(lineText.indexOf(':') + 1).trim();
 
       final dd = md.Element('dd', [md.Text(content)]);
       definitions.add(dd);
@@ -89,13 +85,14 @@ class DefinitionListSyntax extends md.BlockSyntax {
 }
 
 /// Syntax for footnote definitions
-class FootnoteDefinitionSyntax extends md.BlockSyntax {
+class FootnoteDefinitionBlockSyntax extends md.BlockSyntax {
   @override
   RegExp get pattern => RegExp(r'^[ ]{0,3}\[\^([^\]]+)\]:[ \t]*(.*)$');
 
   @override
   md.Node parse(md.BlockParser parser) {
-    final match = pattern.firstMatch(parser.current);
+    final lineText = (parser.current is md.Line) ? (parser.current as md.Line).content : (parser.current as String);
+    final match = pattern.firstMatch(lineText);
     if (match == null) return md.Text('');
 
     final id = match.group(1)!;
@@ -105,12 +102,16 @@ class FootnoteDefinitionSyntax extends md.BlockSyntax {
 
     // Parse additional lines that are part of the footnote
     final lines = <String>[content];
-    while (!parser.isDone &&
-           (parser.current.startsWith('    ') || parser.current.trim().isEmpty)) {
-      if (parser.current.trim().isNotEmpty) {
-        lines.add(parser.current.substring(4)); // Remove indentation
+    while (!parser.isDone) {
+      final curr = (parser.current is md.Line) ? (parser.current as md.Line).content : (parser.current as String);
+      if (curr.startsWith('    ') || curr.trim().isEmpty) {
+        if (curr.trim().isNotEmpty) {
+          lines.add(curr.substring(4));
+        }
+        parser.advance();
+      } else {
+        break;
       }
-      parser.advance();
     }
 
     final footnote = md.Element('div', [md.Text(lines.join('\n'))]);
@@ -123,8 +124,8 @@ class FootnoteDefinitionSyntax extends md.BlockSyntax {
 }
 
 /// Inline syntax for footnote references
-class FootnoteSyntax extends md.InlineSyntax {
-  FootnoteSyntax() : super(r'\[\^([^\]]+)\]');
+class FootnoteInlineSyntax extends md.InlineSyntax {
+  FootnoteInlineSyntax() : super(r'\[\^([^\]]+)\]');
 
   @override
   bool onMatch(md.InlineParser parser, Match match) {
@@ -141,8 +142,8 @@ class FootnoteSyntax extends md.InlineSyntax {
 }
 
 /// Inline syntax for highlight/mark text (==text==)
-class HighlightSyntax extends md.InlineSyntax {
-  HighlightSyntax() : super(r'==([^=]+)==');
+class HighlightInlineSyntax extends md.InlineSyntax {
+  HighlightInlineSyntax() : super(r'==([^=]+)==');
 
   @override
   bool onMatch(md.InlineParser parser, Match match) {
@@ -157,8 +158,8 @@ class HighlightSyntax extends md.InlineSyntax {
 }
 
 /// Inline syntax for subscript (~text~)
-class SubscriptSyntax extends md.InlineSyntax {
-  SubscriptSyntax() : super(r'~([^~]+)~');
+class SubscriptInlineSyntax extends md.InlineSyntax {
+  SubscriptInlineSyntax() : super(r'~([^~]+)~');
 
   @override
   bool onMatch(md.InlineParser parser, Match match) {
@@ -173,8 +174,8 @@ class SubscriptSyntax extends md.InlineSyntax {
 }
 
 /// Inline syntax for superscript (^text^)
-class SuperscriptSyntax extends md.InlineSyntax {
-  SuperscriptSyntax() : super(r'\^([^^]+)\^');
+class SuperscriptInlineSyntax extends md.InlineSyntax {
+  SuperscriptInlineSyntax() : super(r'\^([^^]+)\^');
 
   @override
   bool onMatch(md.InlineParser parser, Match match) {
@@ -188,109 +189,4 @@ class SuperscriptSyntax extends md.InlineSyntax {
   }
 }
 
-/// Extension processor for footnotes
-class FootnoteExtensionProcessor extends md.ExtensionProcessor {
-  @override
-  void process(md.Document document) {
-    final footnoteRefs = <md.Element>[];
-    final footnoteDefinitions = <md.Element>[];
-
-    // Collect footnote references and definitions
-    document.accept(FootnoteCollector(footnoteRefs, footnoteDefinitions));
-
-    // Number footnotes and create back-references
-    final footnoteMap = <String, int>{};
-    var footnoteIndex = 1;
-
-    for (final ref in footnoteRefs) {
-      final id = ref.attributes['data-footnote-ref'];
-      if (id != null && !footnoteMap.containsKey(id)) {
-        footnoteMap[id] = footnoteIndex++;
-      }
-    }
-
-    // Update footnote references with numbers
-    for (final ref in footnoteRefs) {
-      final id = ref.attributes['data-footnote-ref'];
-      if (id != null && footnoteMap.containsKey(id)) {
-        final number = footnoteMap[id]!;
-        ref.textContent = '[$number]';
-        ref.attributes['title'] = 'Footnote $number';
-      }
-    }
-
-    // Update footnote definitions with numbers and back-links
-    for (final def in footnoteDefinitions) {
-      final id = def.attributes['data-footnote-id'];
-      if (id != null && footnoteMap.containsKey(id)) {
-        final number = footnoteMap[id]!;
-        def.attributes['data-footnote-number'] = number.toString();
-
-        // Add back-link
-        final backLink = md.Element.text('a', '↩');
-        backLink.attributes['href'] = '#footnote-ref-$id';
-        backLink.attributes['class'] = 'footnote-backref';
-        backLink.attributes['title'] = 'Back to reference';
-
-        def.children!.add(md.Text(' '));
-        def.children!.add(backLink);
-      }
-    }
-  }
-}
-
-/// Extension processor for task lists
-class TaskListExtensionProcessor extends md.ExtensionProcessor {
-  @override
-  void process(md.Document document) {
-    // Find all task list items and wrap them in appropriate containers
-    document.accept(TaskListProcessor());
-  }
-}
-
-/// Visitor to collect footnotes
-class FootnoteCollector implements md.NodeVisitor {
-  final List<md.Element> footnoteRefs;
-  final List<md.Element> footnoteDefinitions;
-
-  FootnoteCollector(this.footnoteRefs, this.footnoteDefinitions);
-
-  @override
-  bool visitElementBefore(md.Element element) {
-    if (element.attributes['class'] == 'footnote-ref') {
-      footnoteRefs.add(element);
-    } else if (element.attributes['class'] == 'footnote-definition') {
-      footnoteDefinitions.add(element);
-    }
-    return true;
-  }
-
-  @override
-  void visitElementAfter(md.Element element) {}
-
-  @override
-  void visitText(md.Text text) {}
-}
-
-/// Visitor to process task lists
-class TaskListProcessor implements md.NodeVisitor {
-  @override
-  bool visitElementBefore(md.Element element) {
-    if (element.tag == 'li' &&
-        element.attributes['class']?.contains('task-list-item') == true) {
-
-      // Mark parent list as task list
-      final parent = element.parent;
-      if (parent is md.Element && (parent.tag == 'ul' || parent.tag == 'ol')) {
-        parent.attributes['class'] = 'task-list';
-      }
-    }
-    return true;
-  }
-
-  @override
-  void visitElementAfter(md.Element element) {}
-
-  @override
-  void visitText(md.Text text) {}
-}
+// Extension processors and visitors are intentionally omitted for compatibility with markdown >= 7

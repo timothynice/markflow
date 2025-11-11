@@ -33,8 +33,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         // Parse JSON settings if available
         _extensionSettings = const MarkdownExtensionSettings();
       }
-    } catch (e) {
-      // Use default settings on error
+    } catch (e, st) {
+      debugPrint('Failed to load markdown extension settings: $e');
+      debugPrintStack(stackTrace: st);
     } finally {
       setState(() {
         _isLoading = false;
@@ -47,8 +48,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       final prefs = await SharedPreferences.getInstance();
       // Save settings JSON (simplified for now)
       await prefs.setString('markdown_extensions', 'settings');
-    } catch (e) {
-      // Handle save error
+    } catch (e, st) {
+      debugPrint('Failed to save markdown extension settings: $e');
+      debugPrintStack(stackTrace: st);
     }
   }
 
@@ -196,9 +198,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildKeyBindingSettings() {
-    return ValueListenableBuilder(
-      valueListenable: _keyBindingService,
-      builder: (context, _, __) {
+    return AnimatedBuilder(
+      animation: _keyBindingService,
+      builder: (context, _) {
         final settings = _keyBindingService.settings;
 
         return Column(
@@ -219,7 +221,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       'Choose your preferred key binding style for the editor',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -301,7 +303,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 : 'Select a key binding mode above to get started.',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                       ),
                     ],

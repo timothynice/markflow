@@ -64,10 +64,9 @@ class _WritingGoalsDialogState extends State<WritingGoalsDialog>
                   ),
                 ),
                 const Spacer(),
-                ShadButton.ghost(
+                ShadIconButton.ghost(
                   onPressed: () => Navigator.of(context).pop(),
                   icon: const Icon(Icons.close, size: 18),
-                  padding: const EdgeInsets.all(4),
                 ),
               ],
             ),
